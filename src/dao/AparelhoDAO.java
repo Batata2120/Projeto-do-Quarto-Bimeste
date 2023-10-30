@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import objetos.Academia;
 import objetos.Aparelho;
 
 public class AparelhoDAO {
@@ -59,16 +60,49 @@ public class AparelhoDAO {
 		}
 		return null;
 	}
-
-	public int remover(Aparelho c) {
-		int removeu = 0;
-		String sql = "DELETE FROM Aparelho WHERE codigo = ?;";
+	public ArrayList<Aparelho> getLista(Academia ac) {
+		String sql = "SELECT * FROM Aparelho WHERE CNPJ_Academia=?;";
 		PreparedStatement stmt;
+		Aparelho c;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setInt(1, c.getId());
-			removeu = stmt.executeUpdate();
+			stmt.setString(1, ac.getCnpj());
+			ResultSet rs = stmt.executeQuery();
+			ArrayList<Aparelho> Aparelhos = new ArrayList<>();
+			while (rs.next()) {
+				c = new Aparelho();
+				c.setQualidade(rs.getString("qualidade"));
+				c.setPreco(rs.getDouble("preco"));
+				c.setId(rs.getInt("id"));
+				c.setMarca(rs.getString("marca"));
+				c.setCnpj_academia(rs.getString("CNPJ_Academia"));
+				Aparelhos.add(c);
+			}
+			rs.close();
 			stmt.close();
+			return Aparelhos;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public int remover(Aparelho c) {
+		int removeu = 0;
+		int removeuAparelho = 0;
+		String sqlAparelhoCliente = "DELETE FROM Clientes_usam_aparelho WHERE ID_APARELHOS=?";
+		String sql = "DELETE FROM Aparelho WHERE id = ?;";
+		PreparedStatement stmt;
+		PreparedStatement stmtAparelhoCliente;
+		try {
+			stmtAparelhoCliente = (PreparedStatement) connection.prepareStatement(sqlAparelhoCliente);
+			stmtAparelhoCliente.setInt(1, c.getId());
+			removeuAparelho = stmtAparelhoCliente.executeUpdate();
+			if (removeuAparelho == 1) {
+				stmt = (PreparedStatement) connection.prepareStatement(sql);
+				stmt.setInt(1, c.getId());
+				removeu = stmt.executeUpdate();
+				stmt.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

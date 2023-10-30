@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import objetos.Academia;
 import objetos.Funcionario;
 
 public class FuncionarioDAO {
@@ -60,16 +61,50 @@ public class FuncionarioDAO {
 		}
 		return null;
 	}
-
-	public int remover(Funcionario c) {
-		int removeu = 0;
-		String sql = "DELETE FROM Funcionario WHERE cpf = ?;";
+	public ArrayList<Funcionario> getLista(Academia ac) {
+		String sql = "SELECT * FROM Funcionario WHERE CNPJ_Academia=?;";
 		PreparedStatement stmt;
+		Funcionario c;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getCpf());
-			removeu = stmt.executeUpdate();
+			stmt.setString(1, ac.getCnpj());
+			ResultSet rs = stmt.executeQuery();
+			ArrayList<Funcionario> Funcionarios = new ArrayList<>();
+			while (rs.next()) {
+				c = new Funcionario();
+				c.setNome(rs.getString("nome"));
+				c.setCpf(rs.getString("cpf"));
+				c.setFuncao(rs.getString("funcao"));
+				c.setSalario(rs.getDouble("salario"));
+				c.setCnpjAcademiaResponsavel(rs.getString("CNPJ_Academia"));
+				Funcionarios.add(c);
+			}
+			rs.close();
 			stmt.close();
+			return Funcionarios;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public int remover(Funcionario c) {
+		int removeu = 0;
+		int removeuDependentes = 0;
+		String sqlDependentes = "DELETE FROM Dependente_funcionario WHERE cpf_funcionario = ?;";
+		String sql = "DELETE FROM Funcionario WHERE cpf = ?;";
+		PreparedStatement stmt;
+		PreparedStatement stmtDependentes;
+		try {
+			stmtDependentes = (PreparedStatement) connection.prepareStatement(sqlDependentes);
+			stmtDependentes.setString(1, c.getCpf());
+			removeuDependentes = stmtDependentes.executeUpdate();
+			stmtDependentes.close();
+			if (removeuDependentes == 1) {
+				stmt = (PreparedStatement) connection.prepareStatement(sql);
+				stmt.setString(1, c.getCpf());
+				removeu = stmt.executeUpdate();
+				stmt.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

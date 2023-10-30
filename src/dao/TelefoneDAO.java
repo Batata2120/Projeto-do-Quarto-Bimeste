@@ -1,26 +1,28 @@
 package dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import objetos.Cliente;
-import objetos.ClientePremium;
 
-public class ClientePremiumDAO extends ClienteDAO {
-	public ClientePremiumDAO() {
+public class TelefoneDAO {
+	private Connection connection;
+
+	public TelefoneDAO() {
 		connection = new FabricaConexoes().getConnection();
 	}
-	public int inserir(ClientePremium c) {
+
+	public int inserir(Cliente cliente, String telefone) {
 		int inseriu = 0;
-		String sql = "INSERT INTO Cliente_premium(cpf, Dieta_planejada, Desconto) VALUES (?,?,?);";
+		String sql = "INSERT INTO TELEFONE_CLIENTES(CPF_CLIENTE, telefone) VALUES (?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getCpf());
-			stmt.setString(2, c.getDietaPlanejada());
-			stmt.setDouble(3, c.getDesconto());
+			stmt.setString(1, cliente.getCpf());
+			stmt.setString(2, telefone);
 			inseriu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -28,36 +30,37 @@ public class ClientePremiumDAO extends ClienteDAO {
 		}
 		return inseriu;
 	}
-	public ArrayList<Cliente> getLista() {
-		String sql = "SELECT * FROM Cliente_premium;";
+
+	public ArrayList<String> getLista(Cliente cliente) {
+		String sql = "SELECT * FROM TELEFONE_CLIENTES WHERE CPF_CLIENTE=?;";
 		PreparedStatement stmt;
-		ClientePremium c;
+		String telefone;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
+			stmt.setString(1, cliente.getCpf());
 			ResultSet rs = stmt.executeQuery();
-			ArrayList<Cliente> Clientes = new ArrayList<>();
+			ArrayList<String> telefones = new ArrayList<>();
 			while (rs.next()) {
-				c = new ClientePremium();
-				c.setCpf(rs.getString("cpf"));
-				c.setDietaPlanejada(rs.getString("ficha_corporal"));
-				c.setDesconto(rs.getDouble("desconto"));
-				Clientes.add(c);
+				telefone = new String();
+				telefone = rs.getString("telefone");
+				telefones.add(telefone);
 			}
 			rs.close();
 			stmt.close();
-			return Clientes;
+			return telefones;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	public int remover(ClientePremium c) {
+	public int remover(Cliente cliente, String telefone) {
 		int removeu = 0;
-		String sql = "DELETE FROM Cliente_premium WHERE cpf = ?;";
+		String sql = "DELETE FROM TELEFONE_CLIENTES WHERE CPF_CLIENTE=? AND telefone=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getCpf());
+			stmt.setString(1, cliente.getCpf());
+			stmt.setString(2, telefone);
 			removeu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -65,13 +68,13 @@ public class ClientePremiumDAO extends ClienteDAO {
 		}
 		return removeu;
 	}
-	public int remover(String cpf) {
+	public int remover(Cliente cliente) {
 		int removeu = 0;
-		String sql = "DELETE FROM Cliente_premium WHERE cpf = ?;";
+		String sql = "DELETE FROM TELEFONE_CLIENTES WHERE CPF_CLIENTE=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, cpf);
+			stmt.setString(1, cliente.getCpf());
 			removeu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -79,15 +82,15 @@ public class ClientePremiumDAO extends ClienteDAO {
 		}
 		return removeu;
 	}
-	public int alterar(ClientePremium c) {
+	public int alterar(Cliente cliente, String telefoneAntigo, String telefoneNovo) {
 		int alterou = 0;
-		String sql = "UPDATE Cliente_premium SET Dieta_planejada=?, Desconto=? WHERE cpf=?;";
+		String sql = "UPDATE TELEFONE_CLIENTES SET telefone=? WHERE CPF_CLIENTE=? AND telefone=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getDietaPlanejada());
-			stmt.setDouble(2, c.getDesconto());
-			stmt.setString(3, c.getCpf());
+			stmt.setString(1, telefoneNovo);
+			stmt.setString(2, cliente.getCpf());
+			stmt.setString(3, telefoneAntigo);
 			alterou = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -96,5 +99,3 @@ public class ClientePremiumDAO extends ClienteDAO {
 		return alterou;
 	}
 }
-
-

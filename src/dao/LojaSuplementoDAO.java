@@ -58,13 +58,24 @@ public class LojaSuplementoDAO {
 
 	public int remover(LojaSuplemento c) {
 		int removeu = 0;
+		int removeuLoja = 0;
+		String sqlLoja = "DELETE FROM Academia_tem_loja WHERE CNPJ_Loja=?";
 		String sql = "DELETE FROM LojaSuplemento WHERE CNPJ = ?;";
 		PreparedStatement stmt;
+		PreparedStatement stmtLoja;
+		ProdutoDAO produtoConnection = new ProdutoDAO();
 		try {
-			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getCnpj());
-			removeu = stmt.executeUpdate();
-			stmt.close();
+			produtoConnection.remover(c);
+			stmtLoja = (PreparedStatement) connection.prepareStatement(sqlLoja);
+			stmtLoja.setString(1, c.getCnpj());
+			removeuLoja = stmtLoja.executeUpdate();
+			stmtLoja.close();
+			if (removeuLoja == 1) {
+				stmt = (PreparedStatement) connection.prepareStatement(sql);
+				stmt.setString(1, c.getCnpj());
+				removeu = stmt.executeUpdate();
+				stmt.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

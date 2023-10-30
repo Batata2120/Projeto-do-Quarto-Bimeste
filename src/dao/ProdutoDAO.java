@@ -1,26 +1,28 @@
 package dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import objetos.Cliente;
-import objetos.ClientePremium;
+import objetos.LojaSuplemento;
 
-public class ClientePremiumDAO extends ClienteDAO {
-	public ClientePremiumDAO() {
+public class ProdutoDAO {
+	private Connection connection;
+
+	public ProdutoDAO() {
 		connection = new FabricaConexoes().getConnection();
 	}
-	public int inserir(ClientePremium c) {
+
+	public int inserir(LojaSuplemento c, String produto) {
 		int inseriu = 0;
-		String sql = "INSERT INTO Cliente_premium(cpf, Dieta_planejada, Desconto) VALUES (?,?,?);";
+		String sql = "INSERT INTO produtos(CNPJ_LOJA, produto) VALUES (?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getCpf());
-			stmt.setString(2, c.getDietaPlanejada());
-			stmt.setDouble(3, c.getDesconto());
+			stmt.setString(1, c.getCnpj());
+			stmt.setString(2, produto);
 			inseriu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -28,36 +30,37 @@ public class ClientePremiumDAO extends ClienteDAO {
 		}
 		return inseriu;
 	}
-	public ArrayList<Cliente> getLista() {
-		String sql = "SELECT * FROM Cliente_premium;";
+
+	public ArrayList<String> getLista(LojaSuplemento c) {
+		String sql = "SELECT * FROM produtos WHERE CNPJ_LOJA=?;";
 		PreparedStatement stmt;
-		ClientePremium c;
+		String produto;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
+			stmt.setString(1, c.getCnpj());
 			ResultSet rs = stmt.executeQuery();
-			ArrayList<Cliente> Clientes = new ArrayList<>();
+			ArrayList<String> produtos = new ArrayList<>();
 			while (rs.next()) {
-				c = new ClientePremium();
-				c.setCpf(rs.getString("cpf"));
-				c.setDietaPlanejada(rs.getString("ficha_corporal"));
-				c.setDesconto(rs.getDouble("desconto"));
-				Clientes.add(c);
+				produto = new String();
+				produto = rs.getString("produto");
+				produtos.add(produto);
 			}
 			rs.close();
 			stmt.close();
-			return Clientes;
+			return produtos;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	public int remover(ClientePremium c) {
+	public int remover(LojaSuplemento ls, String c) {
 		int removeu = 0;
-		String sql = "DELETE FROM Cliente_premium WHERE cpf = ?;";
+		String sql = "DELETE FROM produtos WHERE CNPJ_LOJA=? AND produto=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getCpf());
+			stmt.setString(1, ls.getCnpj());
+			stmt.setString(2, c);
 			removeu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -65,13 +68,13 @@ public class ClientePremiumDAO extends ClienteDAO {
 		}
 		return removeu;
 	}
-	public int remover(String cpf) {
+	public int remover(LojaSuplemento ls) {
 		int removeu = 0;
-		String sql = "DELETE FROM Cliente_premium WHERE cpf = ?;";
+		String sql = "DELETE FROM produtos WHERE CNPJ_LOJA=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, cpf);
+			stmt.setString(1, ls.getCnpj());
 			removeu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -79,15 +82,15 @@ public class ClientePremiumDAO extends ClienteDAO {
 		}
 		return removeu;
 	}
-	public int alterar(ClientePremium c) {
+	public int alterar(LojaSuplemento lojaDeSuplementos, String produtoAntigo, String ProdutoNovo) {
 		int alterou = 0;
-		String sql = "UPDATE Cliente_premium SET Dieta_planejada=?, Desconto=? WHERE cpf=?;";
+		String sql = "UPDATE produtos SET produto=? WHERE CNPJ_LOJA=? AND produto=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getDietaPlanejada());
-			stmt.setDouble(2, c.getDesconto());
-			stmt.setString(3, c.getCpf());
+			stmt.setString(1, ProdutoNovo);
+			stmt.setString(2, lojaDeSuplementos.getCnpj());
+			stmt.setString(3, produtoAntigo);
 			alterou = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -96,5 +99,3 @@ public class ClientePremiumDAO extends ClienteDAO {
 		return alterou;
 	}
 }
-
-

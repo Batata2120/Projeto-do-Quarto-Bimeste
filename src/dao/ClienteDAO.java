@@ -38,6 +38,7 @@ public class ClienteDAO {
 		}
 		return inseriu;
 	}
+
 	public ArrayList<Cliente> getLista() {
 		String sql = "SELECT * FROM Cliente;";
 		PreparedStatement stmt;
@@ -72,13 +73,32 @@ public class ClienteDAO {
 
 	public int remover(Cliente c) {
 		int removeu = 0;
+		int removeuCliente = 0;
+		String sqlCliente = "DELETE FROM Clientes_integrado_Academia WHERE CPF_CLIENTES=?";
+		String sqlAparelhoCliente = "DELETE FROM Clientes_usam_aparelho WHERE CPF_CLIENTES=?";
 		String sql = "DELETE FROM Cliente WHERE codigo = ?;";
+		PreparedStatement stmtCliente;
 		PreparedStatement stmt;
+		PreparedStatement stmtAparelhoCliente;
+		ClientePremiumDAO clientePremiumConnection = new ClientePremiumDAO();
+		TelefoneDAO telefoneConnection = new TelefoneDAO();
 		try {
-			stmt = (PreparedStatement) connection.prepareStatement(sql);
-			stmt.setString(1, c.getCpf());
-			removeu = stmt.executeUpdate();
-			stmt.close();
+			telefoneConnection.remover(c);
+			clientePremiumConnection.remover(c.getCpf());
+			stmtCliente = (PreparedStatement) connection.prepareStatement(sqlCliente);
+			stmtCliente.setString(1, c.getCpf());
+			removeuCliente = stmtCliente.executeUpdate();
+			if (removeuCliente == 1) {
+				stmtAparelhoCliente = (PreparedStatement) connection.prepareStatement(sqlAparelhoCliente);
+				stmtAparelhoCliente.setString(1, c.getCpf());
+				removeuCliente = stmtCliente.executeUpdate();
+			}
+			if (removeuCliente == 1) {
+				stmt = (PreparedStatement) connection.prepareStatement(sql);
+				stmt.setString(1, c.getCpf());
+				removeu = stmt.executeUpdate();
+				stmt.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

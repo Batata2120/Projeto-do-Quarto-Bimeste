@@ -7,12 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import objetos.Academia;
+import objetos.Aparelho;
+import objetos.Funcionario;
 
 public class AcademiaDAO {
 	private Connection connection;
 
 	public AcademiaDAO() {
-	connection = new FabricaConexoes().getConnection();
+		connection = new FabricaConexoes().getConnection();
 	}
 
 	public int inserir(Academia c) {
@@ -57,4 +59,47 @@ public class AcademiaDAO {
 		}
 		return null;
 	}
+
+	public int remover(Academia c) {
+		int removeu = 0;
+		int removeuAcademia = 0;
+		String sqlAcademia = "DELETE FROM Academia_tem_loja WHERE CNPJ_Academia=?";
+		String sql = "DELETE FROM Academia WHERE CNPJ = ?;";
+		String sqlAcademiaCliente = "DELETE FROM Clientes_integrado_Academia WHERE CNPJ_ACADEMIA=?";
+		PreparedStatement stmt;
+		PreparedStatement stmtAcademia;
+		PreparedStatement stmtAcademiaCliente;
+		AparelhoDAO aparelhoConnection = new AparelhoDAO();
+		FuncionarioDAO funcionarioConnection = new FuncionarioDAO();
+		try {
+			ArrayList<Aparelho> listaAparelhos = aparelhoConnection.getLista(c);
+			ArrayList<Funcionario> listaFuncionario = funcionarioConnection.getLista(c);
+			for(int i = 0; i < listaAparelhos.size(); i++) {
+				aparelhoConnection.remover(listaAparelhos.get(i));
+			}
+			for(int i = 0; i < listaFuncionario.size(); i++) {
+				funcionarioConnection.remover(listaFuncionario.get(i));
+			}
+			stmtAcademia = (PreparedStatement) connection.prepareStatement(sqlAcademia);
+			stmtAcademia.setString(1, c.getCnpj());
+			removeuAcademia = stmtAcademia.executeUpdate();
+			stmtAcademia.close();
+			if (removeuAcademia == 1) {
+				stmtAcademiaCliente = (PreparedStatement) connection.prepareStatement(sqlAcademiaCliente);
+				stmtAcademiaCliente.setString(1, c.getCnpj());
+				removeuAcademia = stmtAcademiaCliente.executeUpdate();
+				stmtAcademiaCliente.close();
+			}
+			if (removeuAcademia == 1) {
+				stmt = (PreparedStatement) connection.prepareStatement(sql);
+				stmt.setString(1, c.getCnpj());
+				removeu = stmt.executeUpdate();
+				stmt.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return removeu;
+	}
+
 }
