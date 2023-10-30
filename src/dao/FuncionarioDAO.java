@@ -27,7 +27,7 @@ public class FuncionarioDAO {
 			stmt.setString(3, c.getFuncao());
 			stmt.setDouble(4, c.getSalario());
 			stmt.setString(5, c.getDataNascimento());
-			stmt.setString(6, c.getAcademiaResponsavel().getCnpj());
+			stmt.setString(6, c.getCnpjAcademiaResponsavel());
 			inseriu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {

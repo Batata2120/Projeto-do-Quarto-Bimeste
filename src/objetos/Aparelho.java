@@ -8,13 +8,13 @@ public class Aparelho {
 	private String cnpj_academia;
 	private Academia academiaResponsavel;
 	//Construtor
-	public Aparelho(String qualidade, double preco, int id, String marca, Academia academiaResponsavel) {
+	public Aparelho(String qualidade, double preco, int id, String cnpj_academia, String marca) {
 		super();
 		this.qualidade = qualidade;
 		this.preco = preco;
 		this.id = id;
 		this.marca = marca;
-		this.academiaResponsavel = academiaResponsavel;
+		this.cnpj_academia = cnpj_academia;
 	}
 	public Aparelho() {
 		super();
@@ -55,6 +55,11 @@ public class Aparelho {
 	}
 	public void setCnpj_academia(String cnpj_academia) {
 		this.cnpj_academia = cnpj_academia;
+	}
+	@Override
+	public String toString() {
+		return "Aparelho [qualidade=" + qualidade + ", preco=" + preco + ", id=" + id + ", marca=" + marca
+				+ ", cnpj_academia=" + cnpj_academia + ", academiaResponsavel=" + academiaResponsavel + "]";
 	}
 	
 }

@@ -14,6 +14,7 @@ public class Dependente {
 		this.nome = nome;
 		this.dataNascimento = dataNascimento;
 		this.cpf = cpf;
+		this.cpfFuncionario = cpfFuncionario;
 		this.grauParentesco = grauParentesco;
 		this.funcionarioResponsavel = funcionarioResponsavel;
 	}
@@ -57,6 +58,12 @@ public class Dependente {
 	}
 	public void setCpfFuncionario(String cpfFuncionario) {
 		this.cpfFuncionario = cpfFuncionario;
+	}
+	@Override
+	public String toString() {
+		return "Dependente [nome=" + nome + ", dataNascimento=" + dataNascimento + ", cpf=" + cpf + ", grauParentesco="
+				+ grauParentesco + ", funcionarioResponsavel=" + funcionarioResponsavel + ", cpfFuncionario="
+				+ cpfFuncionario + "]";
 	}
 	
 }

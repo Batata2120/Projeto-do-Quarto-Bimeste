@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import objetos.Cliente;
 import objetos.ClientePremium;
+import objetos.Endereco;
 
 public class ClientePremiumDAO extends ClienteDAO {
 	public ClientePremiumDAO() {
@@ -17,6 +17,8 @@ public class ClientePremiumDAO extends ClienteDAO {
 		String sql = "INSERT INTO Cliente_premium(cpf, Dieta_planejada, Desconto) VALUES (?,?,?);";
 		PreparedStatement stmt;
 		try {
+			ClienteDAO clienteConnection = new ClienteDAO();
+			clienteConnection.inserir(c);
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
 			stmt.setString(1, c.getCpf());
 			stmt.setString(2, c.getDietaPlanejada());
@@ -28,19 +30,29 @@ public class ClientePremiumDAO extends ClienteDAO {
 		}
 		return inseriu;
 	}
-	public ArrayList<Cliente> getLista() {
-		String sql = "SELECT * FROM Cliente_premium;";
+	public ArrayList<ClientePremium> getListaClientePremium() {
+		String sql = "SELECT c.* , cp.Dieta_planejada, cp.Desconto FROM Cliente_premium AS cp, Clientes AS c WHERE c.cpf=cp.cpf;";
 		PreparedStatement stmt;
 		ClientePremium c;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery();
-			ArrayList<Cliente> Clientes = new ArrayList<>();
+			ArrayList<ClientePremium> Clientes = new ArrayList<>();
 			while (rs.next()) {
 				c = new ClientePremium();
 				c.setCpf(rs.getString("cpf"));
-				c.setDietaPlanejada(rs.getString("ficha_corporal"));
-				c.setDesconto(rs.getDouble("desconto"));
+				c.setFichaCorporal(rs.getString("ficha_corporal"));
+				c.setNome(rs.getString("nome"));
+				Endereco enderecoCliente = new Endereco();
+				enderecoCliente.setCep(rs.getString("cep"));
+				enderecoCliente.setEstado(rs.getString("estado"));
+				enderecoCliente.setCidade(rs.getString("cidade"));
+				enderecoCliente.setBairro(rs.getString("bairro"));
+				enderecoCliente.setRua(rs.getString("rua"));
+				enderecoCliente.setNumero(rs.getString("numero"));
+				c.setEndereco(enderecoCliente);
+				c.setDietaPlanejada(rs.getString("Dieta_planejada"));
+				c.setDesconto(rs.getDouble("Desconto"));
 				Clientes.add(c);
 			}
 			rs.close();

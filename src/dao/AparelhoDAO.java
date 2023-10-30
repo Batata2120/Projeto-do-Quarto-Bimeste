@@ -18,7 +18,7 @@ public class AparelhoDAO {
 
 	public int inserir(Aparelho c) {
 		int inseriu = 0;
-		String sql = "INSERT INTO Aparelho(qualidade, preco, id, marca, CNPJ_Academia) VALUES (?,?,?,?);";
+		String sql = "INSERT INTO Aparelho(qualidade, preco, id, marca, CNPJ_Academia) VALUES (?,?,?,?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
@@ -26,7 +26,7 @@ public class AparelhoDAO {
 			stmt.setDouble(2, c.getPreco());
 			stmt.setInt(3, c.getId());
 			stmt.setString(4, c.getMarca());
-			stmt.setString(5, c.getAcademiaResponsavel().getCnpj());
+			stmt.setString(5, c.getCnpj_academia());
 			inseriu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {

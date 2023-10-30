@@ -5,7 +5,8 @@ public class Academia {
 	private String proprietario;
 	private String cnpj;
 	private String localizacao;
-	//Construtor
+
+	// Construtor
 	public Academia(String nome, String proprietario, String cnpj, String localizacao) {
 		super();
 		this.nome = nome;
@@ -13,32 +14,48 @@ public class Academia {
 		this.cnpj = cnpj;
 		this.localizacao = localizacao;
 	}
+
 	public Academia() {
 		super();
 	}
-	//Getters e Setters
+
+	// Getters e Setters
 	public String getNome() {
 		return nome;
 	}
+
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+
 	public String getProprietario() {
 		return proprietario;
 	}
+
 	public void setProprietario(String proprietario) {
 		this.proprietario = proprietario;
 	}
+
 	public String getCnpj() {
 		return cnpj;
 	}
+
 	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
 	}
+
 	public String getLocalizacao() {
 		return localizacao;
 	}
+
 	public void setLocalizacao(String localizacao) {
 		this.localizacao = localizacao;
 	}
+
+	@Override
+	public String toString() {
+		return "Academia [nome=" + nome + ", proprietario=" + proprietario + ", cnpj=" + cnpj + ", localizacao="
+				+ localizacao + "]";
+	}
+
 }

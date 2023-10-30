@@ -26,4 +26,10 @@ public class ClientePremium extends Cliente{
 	public void setDesconto(double desconto) {
 		this.desconto = desconto;
 	}
+	@Override
+	public String toString() {
+		return "ClientePremium [dietaPlanejada=" + dietaPlanejada + ", desconto=" + desconto + ", nome=" + nome
+				+ ", arrayTelefones=" + arrayTelefones + ", endereco=" + endereco + ", cpf=" + cpf + ", fichaCorporal="
+				+ fichaCorporal + "]";
+	}
 }

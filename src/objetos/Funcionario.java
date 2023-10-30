@@ -66,5 +66,12 @@ public class Funcionario {
 	public void setAcademiaResponsavel(Academia academiaResponsavel) {
 		this.academiaResponsavel = academiaResponsavel;
 	}
+	@Override
+	public String toString() {
+		return "Funcionario [nome=" + nome + ", cpf=" + cpf + ", funcao=" + funcao + ", salario=" + salario
+				+ ", dataNascimento=" + dataNascimento + ", cnpjAcademiaResponsavel=" + cnpjAcademiaResponsavel
+				+ ", academiaResponsavel=" + academiaResponsavel + "]";
+	}
+	
 	
 }

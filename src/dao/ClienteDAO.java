@@ -18,7 +18,7 @@ public class ClienteDAO {
 
 	public int inserir(Cliente c) {
 		int inseriu = 0;
-		String sql = "INSERT INTO Cliente(cpf, ficha_corporal, nome, cep, estado, cidade, bairro, rua, numero) VALUES (?,?,?,?,?,?);";
+		String sql = "INSERT INTO Clientes(cpf, ficha_corporal, nome, cep, estado, cidade, bairro, rua, numero) VALUES (?,?,?,?,?,?,?,?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
@@ -40,7 +40,7 @@ public class ClienteDAO {
 	}
 
 	public ArrayList<Cliente> getLista() {
-		String sql = "SELECT * FROM Cliente;";
+		String sql = "SELECT c.* FROM Clientes AS c, Cliente_premium AS cp WHERE c.cpf NOT IN (SELECT cpf FROM Cliente_premium);";
 		PreparedStatement stmt;
 		Cliente c;
 		try {
@@ -76,7 +76,7 @@ public class ClienteDAO {
 		int removeuCliente = 0;
 		String sqlCliente = "DELETE FROM Clientes_integrado_Academia WHERE CPF_CLIENTES=?";
 		String sqlAparelhoCliente = "DELETE FROM Clientes_usam_aparelho WHERE CPF_CLIENTES=?";
-		String sql = "DELETE FROM Cliente WHERE codigo = ?;";
+		String sql = "DELETE FROM Clientes WHERE codigo = ?;";
 		PreparedStatement stmtCliente;
 		PreparedStatement stmt;
 		PreparedStatement stmtAparelhoCliente;
@@ -107,7 +107,7 @@ public class ClienteDAO {
 
 	public int alterar(Cliente c) {
 		int alterou = 0;
-		String sql = "UPDATE Cliente SET ficha_corporal=?, nome=?, cep=?, estado=?, cidade=?, bairro=?, rua=?, numero=? WHERE cpf=?;";
+		String sql = "UPDATE Clientes SET ficha_corporal=?, nome=?, cep=?, estado=?, cidade=?, bairro=?, rua=?, numero=? WHERE cpf=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);

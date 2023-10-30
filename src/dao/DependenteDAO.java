@@ -17,14 +17,14 @@ public class DependenteDAO {
 
 	public int inserir(Dependente c) {
 		int inseriu = 0;
-		String sql = "INSERT INTO Dependente(nome, data_nascimento, cpf_dependente, cpf_funcionario, grau_parentesco) VALUES (?,?,?,?,?);";
+		String sql = "INSERT INTO Dependente_funcionario(nome, data_nascimento, cpf_dependente, cpf_funcionario, grau_parentesco) VALUES (?,?,?,?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
 			stmt.setString(1, c.getNome());
 			stmt.setString(2, c.getDataNascimento());
 			stmt.setString(3, c.getCpf());
-			stmt.setString(4, c.getFuncionarioResponsavel().getCpf());
+			stmt.setString(4, c.getCpfFuncionario());
 			stmt.setString(5, c.getGrauParentesco());
 			inseriu = stmt.executeUpdate();
 			stmt.close();
@@ -35,7 +35,7 @@ public class DependenteDAO {
 	}
 
 	public ArrayList<Dependente> getLista() {
-		String sql = "SELECT * FROM Dependente;";
+		String sql = "SELECT * FROM Dependente_funcionario;";
 		PreparedStatement stmt;
 		Dependente c;
 		try {
@@ -62,7 +62,7 @@ public class DependenteDAO {
 
 	public int remover(Dependente c) {
 		int removeu = 0;
-		String sql = "DELETE FROM Dependente WHERE cpf_dependente = ?;";
+		String sql = "DELETE FROM Dependente_funcionario WHERE cpf_dependente = ?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
@@ -77,7 +77,7 @@ public class DependenteDAO {
 
 	public int alterar(Dependente c) {
 		int alterou = 0;
-		String sql = "UPDATE Dependente SET nome=?, data_nascimento=?, grau_parentesco=? WHERE cpf_dependente=?;";
+		String sql = "UPDATE Dependente_funcionario SET nome=?, data_nascimento=?, grau_parentesco=? WHERE cpf_dependente=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);

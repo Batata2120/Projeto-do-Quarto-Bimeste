@@ -3,11 +3,11 @@ package objetos;
 import java.util.ArrayList;
 
 public class Cliente {
-	private String nome;
-	private ArrayList<String> arrayTelefones = new ArrayList<>();
-	private Endereco endereco;
-	private String cpf;
-	private String fichaCorporal;
+	protected String nome;
+	protected ArrayList<String> arrayTelefones = new ArrayList<>();
+	protected Endereco endereco;
+	protected String cpf;
+	protected String fichaCorporal;
 	//Contrutor
 	public Cliente(String nome, Endereco endereco, String cpf, String fichaCorporal) {
 		super();
@@ -69,4 +69,10 @@ public class Cliente {
 	public void setFichaCorporal(String fichaCorporal) {
 		this.fichaCorporal = fichaCorporal;
 	}
+	@Override
+	public String toString() {
+		return "Cliente [nome=" + nome + ", arrayTelefones=" + arrayTelefones + ", endereco=" + endereco + ", cpf="
+				+ cpf + ", fichaCorporal=" + fichaCorporal + "]";
+	}
+	
 }

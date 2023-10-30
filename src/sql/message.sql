@@ -131,16 +131,16 @@ VALUES ('Sky Fit', 'Gumball', '12345678901237', 'Avenida Tadeu, rua carlinho 101
 INSERT INTO Academia (nome, proprietario, CNPJ, localizacao)
 VALUES ('Grow Fit', 'Martinelli', '12345678901238', 'Alvorado, rua alfredo 220');
 
-INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia)
-VALUES ('Alta qualidade', 500.00, 1, '12345678901234');
-INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia)
-VALUES ('Media qualidade', 550.00, 2, '12345678901235');
-INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia)
-VALUES ('Baixa qualidade', 300.00, 3, '12345678901236');
-INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia)
-VALUES ('Media qualidade', 400.00, 4, '12345678901237');
-INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia)
-VALUES ('Alta qualidade', 700.00, 5, '12345678901238');
+INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia, marca)
+VALUES ('Alta qualidade', 500.00, 1, '12345678901234', "Banana");
+INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia, marca)
+VALUES ('Media qualidade', 550.00, 2, '12345678901235', "Banana");
+INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia, marca)
+VALUES ('Baixa qualidade', 300.00, 3, '12345678901236', "Banana");
+INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia, marca)
+VALUES ('Media qualidade', 400.00, 4, '12345678901237', "Banana");
+INSERT INTO Aparelho (qualidade, preco, id, CNPJ_Academia, marca)
+VALUES ('Alta qualidade', 700.00, 5, '12345678901238', "Banana");
 
 INSERT INTO Clientes_usam_aparelho (CPF_CLIENTES, ID_APARELHOS)
 VALUES ('12345678944', 1);

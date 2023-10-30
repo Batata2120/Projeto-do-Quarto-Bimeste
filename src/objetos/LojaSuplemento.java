@@ -61,5 +61,10 @@ public class LojaSuplemento {
 	public void setArrayProdutos(ArrayList<String> arrayProdutos) {
 		this.arrayProdutos = arrayProdutos;
 	}
+	@Override
+	public String toString() {
+		return "LojaSuplemento [cnpj=" + cnpj + ", localizacao=" + localizacao + ", proprietario=" + proprietario
+				+ ", arrayProdutos=" + arrayProdutos + "]";
+	}
 	
 }

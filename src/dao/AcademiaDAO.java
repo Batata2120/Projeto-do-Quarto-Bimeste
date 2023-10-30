@@ -101,5 +101,22 @@ public class AcademiaDAO {
 		}
 		return removeu;
 	}
+	public int alterar(Academia c) {
+		int alterou = 0;
+		String sql = "UPDATE Academia SET nome=?, proprietario=?, localizacao=? WHERE CNPJ=?;";
+		PreparedStatement stmt;
+		try {
+			stmt = (PreparedStatement) connection.prepareStatement(sql);
+			stmt.setString(1, c.getNome());
+			stmt.setString(2, c.getProprietario());
+			stmt.setString(3, c.getLocalizacao());
+			stmt.setString(4, c.getCnpj());
+			alterou = stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return alterou;
+	}
 
 }

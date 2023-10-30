@@ -17,7 +17,7 @@ public class LojaSuplementoDAO {
 
 	public int inserir(LojaSuplemento c) {
 		int inseriu = 0;
-		String sql = "INSERT INTO LojaSuplemento(CNPJ, localizacao, proprietario) VALUES (?,?,?);";
+		String sql = "INSERT INTO Loja_suplemento(CNPJ, localizacao, proprietario) VALUES (?,?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
@@ -33,7 +33,7 @@ public class LojaSuplementoDAO {
 	}
 
 	public ArrayList<LojaSuplemento> getLista() {
-		String sql = "SELECT * FROM LojaSuplemento;";
+		String sql = "SELECT * FROM Loja_suplemento;";
 		PreparedStatement stmt;
 		LojaSuplemento c;
 		try {
@@ -60,7 +60,7 @@ public class LojaSuplementoDAO {
 		int removeu = 0;
 		int removeuLoja = 0;
 		String sqlLoja = "DELETE FROM Academia_tem_loja WHERE CNPJ_Loja=?";
-		String sql = "DELETE FROM LojaSuplemento WHERE CNPJ = ?;";
+		String sql = "DELETE FROM Loja_suplemento WHERE CNPJ = ?;";
 		PreparedStatement stmt;
 		PreparedStatement stmtLoja;
 		ProdutoDAO produtoConnection = new ProdutoDAO();
@@ -84,7 +84,7 @@ public class LojaSuplementoDAO {
 
 	public int alterar(LojaSuplemento c) {
 		int alterou = 0;
-		String sql = "UPDATE LojaSuplemento SET localizacao=?, proprietario=? WHERE CNPJ=?;";
+		String sql = "UPDATE Loja_suplemento SET localizacao=?, proprietario=? WHERE CNPJ=?;";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
