@@ -1,6 +1,12 @@
 package view;
+
+import dao.*;
+import objetos.*;
+import principal.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Academia2 extends JFrame {
 
@@ -13,12 +19,12 @@ public class Academia2 extends JFrame {
     private JButton sobreNosButton;
 
     public Academia2() {
-        setTitle("Academia");
+        setTitle("AcademiaGE");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         mainPanel = new JPanel();
-        mainPanel.setBackground(Color.GRAY);
+        mainPanel.setBackground(SystemColor.activeCaption);
         mainPanel.setLayout(new GridBagLayout());
 
         titleLabel = new JLabel("Academia");
@@ -30,9 +36,21 @@ public class Academia2 extends JFrame {
         mainPanel.add(titleLabel, titleConstraints);
 
         clientesButton = new JButton("Clientes");
-        clientesButton.addActionListener(e -> {
-           
+        clientesButton.setForeground(new Color(0, 0, 0));
+        clientesButton.setBackground(new Color(192, 192, 192));
+        clientesButton.addActionListener(e-> {
+        	
+				cadastro telacadastro = new cadastro();
+				telacadastro.setVisible(true);
+				
+			
         });
+		
+
+        clientesButton.setBackground(SystemColor.controlShadow);
+        	
+      
+    
         clientesButton.setPreferredSize(new Dimension(200, 100));
         GridBagConstraints buttonConstraintsClientes = new GridBagConstraints();
         buttonConstraintsClientes.insets = new Insets(10, 10, 10, 10);
@@ -43,7 +61,10 @@ public class Academia2 extends JFrame {
         mainPanel.add(clientesButton, buttonConstraintsClientes);
 
         funcionariosButton = new JButton("Funcionários");
+        funcionariosButton.setBackground(Color.LIGHT_GRAY);
         funcionariosButton.addActionListener(e -> {
+        	cadastroF telacadastro1 = new cadastroF();
+			telacadastro1.setVisible(true);
            
         });
         funcionariosButton.setPreferredSize(new Dimension(200, 100));
@@ -56,7 +77,10 @@ public class Academia2 extends JFrame {
         mainPanel.add(funcionariosButton, buttonConstraintsFuncionarios);
 
         aparelhosButton = new JButton("Aparelhos");
+        aparelhosButton.setBackground(Color.LIGHT_GRAY);
         aparelhosButton.addActionListener(e -> {
+        	cadastroA telacadastro2 = new cadastroA();
+			telacadastro2.setVisible(true);
            
         });
         aparelhosButton.setPreferredSize(new Dimension(200, 100));
@@ -69,7 +93,10 @@ public class Academia2 extends JFrame {
         mainPanel.add(aparelhosButton, buttonConstraintsAparelhos);
 
         parceriasButton = new JButton("Parcerias");
+        parceriasButton.setBackground(Color.LIGHT_GRAY);
         parceriasButton.addActionListener(e -> {
+        	cadastroP telacadastro3 = new cadastroP();
+			telacadastro3.setVisible(true);
            
         });
         parceriasButton.setPreferredSize(new Dimension(200, 100));
@@ -82,16 +109,56 @@ public class Academia2 extends JFrame {
         mainPanel.add(parceriasButton, buttonConstraintsParcerias);
 
         sobreNosButton = new JButton("Sobre Nós");
+        sobreNosButton.setBackground(Color.LIGHT_GRAY);
+        sobreNosButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                exibirTelaSobreNos();
+            }
+        });
         GridBagConstraints buttonConstraintsSobreNos = new GridBagConstraints();
-        buttonConstraintsSobreNos.insets = new Insets(10, 10, 10,10);
+        buttonConstraintsSobreNos.insets = new Insets(10, 10, 10, 10);
         buttonConstraintsSobreNos.fill = GridBagConstraints.BOTH;
         buttonConstraintsSobreNos.gridx = 0;
         buttonConstraintsSobreNos.gridy = 3;
         buttonConstraintsSobreNos.gridwidth = 4;
         mainPanel.add(sobreNosButton, buttonConstraintsSobreNos);
 
-        add(mainPanel);
+        getContentPane().add(mainPanel);
     }
+
+    private void exibirTelaSobreNos() {
+        JFrame telaSobreNos = new JFrame("ACADEMIAGE");
+        telaSobreNos.setSize(400, 300);
+        telaSobreNos.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel titleLabel = new JLabel("ACADEMIAGE");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(titleLabel);
+
+        String[] sobreNosText = {
+                "Ambiente climatizado",
+                "Grande quantidade e variedade de equipamentos",
+                "Alerta sobre a programação",
+                "Central de atendimento",
+                "Professores capacitados"
+        };
+
+        for (String text : sobreNosText) {
+            JLabel label = new JLabel(text);
+            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(label);
+        }
+
+        telaSobreNos.getContentPane().add(panel);
+        telaSobreNos.setVisible(true);
+    }
+ 
+    
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Academia2 academia = new Academia2();
@@ -101,3 +168,4 @@ public class Academia2 extends JFrame {
 
         
     }
+

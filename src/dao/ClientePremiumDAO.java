@@ -31,7 +31,7 @@ public class ClientePremiumDAO extends ClienteDAO {
 		return inseriu;
 	}
 	public ArrayList<ClientePremium> getListaClientePremium() {
-		String sql = "SELECT c.* , cp.Dieta_planejada, cp.Desconto FROM Cliente_premium AS cp, Clientes AS c WHERE c.cpf=cp.cpf;";
+		String sql = "SELECT DISTINCT c.* , cp.Dieta_planejada, cp.Desconto FROM Cliente_premium AS cp, Clientes AS c WHERE c.cpf=cp.cpf;";
 		PreparedStatement stmt;
 		ClientePremium c;
 		try {

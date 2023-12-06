@@ -266,45 +266,7 @@ VALUES ('12345678901234', '56789012345679');
 INSERT INTO Academia_tem_loja (CNPJ_Academia, CNPJ_Loja)
 VALUES ('12345678901235', '56789012345678');
 SELECT * FROM Clientes;
--- Consultas
--- 2 consultas simples (em uma única tabela) e que façam filtros utilizando AND e OR. No mínimo uma delas deve usar a cláusula ORDER BY.
--- Selecione todos os clientes que moram na rua "Street 1" ou "Street 2"
-SELECT * FROM Clientes WHERE rua = "Street 1" OR rua = "Street 2";
--- Selecione todos os funcionarios que ganham mais que 1500 e são personal trainers
-SELECT * FROM Funcionario WHERE salario >= 1500 AND funcao = "Personal trainer";
--- 2 consultas que utilizem funções de manipulação de caracteres (LIKE, SUBSTR, LENGTH, UPPER, etc)
--- Selecione todos os clientes que moram numa rua que começa com STREET
-SELECT nome, rua FROM Clientes WHERE rua LIKE("Street _") ORDER BY nome;
--- Selecione o nome de todos os funcionarios que ganham mais que 1500 e coloque o nome deles todos em maiusculo
-SELECT UPPER(nome) as NOME FROM Funcionario WHERE salario > 1500; 
--- 2 consultas que utilizem inner join de duas tabelas
--- Selecione o nome e cpf de todos os funcionarios que trabalham na smart fit
-SELECT f.nome, f.cpf FROM funcionario f INNER JOIN Academia a ON a.nome = "Smart Fit" AND a.CNPJ = f.CNPJ_Academia;
--- Selecione nome e cpf de todos os dependentes e listem o nome do funcionario responsaveis por eles
-SELECT d.nome, d.cpf_dependente, f.nome FROM dependente_funcionario d INNER JOIN Funcionario f ON d.cpf_funcionario = f.cpf;
--- 2 consultas que utilizem inner join de três ou mais tabelas
--- Selecione todas as academias que tem parceria com uma loja e mostre o nome e cnpj da academia e da loja
-SELECT a.nome, a.CNPJ, l.nome, l.cnpj FROM Academia a INNER JOIN Academia_tem_loja al ON a.CNPJ = al.CNPJ0 INNER JOIN
--- 2 consultas que utilizem outer join (left ou right) de tabelas
 
-
--- 2 consultas que utilizem GROUP BY e funções agregadas (SUM, COUNT, MAX, MIN, AVG)
-
-
--- 2 consultas que utilizem a cláusula HAVING juntamente com GROUP BY
-
-
--- 3 consultas que utilizem subconsultas, sendo que ao menos duas delas utilizem os operadores IN, ANY, ALL para tartar subconsultas que retornam mais de 1 registro
-
-
-
-
-
-
-
--- Acima de cada consulta, coloque um comentário (use -- no início da linha) dizendo o que se espera dela. Por exemplo:
--- Retorna o nome em maiúsculo dos empregados que ganham mais que 3000.
--- SELECT UPPER(nome) FROM empregado WHERE salario > 3000;
 
 
 
