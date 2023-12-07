@@ -18,7 +18,7 @@ public class FuncionarioDAO {
 
 	public int inserir(Funcionario c) {
 		int inseriu = 0;
-		String sql = "INSERT INTO Funcionario(nome, cpf, funcao, salario, data_nascimento, CNPJ_Academia) VALUES (?,?,?,?,?,?);";
+		String sql = "INSERT INTO Funcionario(nome, cpf, funcao, salario, data_nascimento , CNPJ_Academia) VALUES (?,?,?,?,?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
@@ -50,6 +50,7 @@ public class FuncionarioDAO {
 				c.setCpf(rs.getString("cpf"));
 				c.setFuncao(rs.getString("funcao"));
 				c.setSalario(rs.getDouble("salario"));
+				c.setDataNascimento(rs.getString("data_nascimento"));
 				c.setCnpjAcademiaResponsavel(rs.getString("CNPJ_Academia"));
 				Funcionarios.add(c);
 			}
@@ -99,12 +100,10 @@ public class FuncionarioDAO {
 			stmtDependentes.setString(1, c.getCpf());
 			removeuDependentes = stmtDependentes.executeUpdate();
 			stmtDependentes.close();
-			if (removeuDependentes == 1) {
 				stmt = (PreparedStatement) connection.prepareStatement(sql);
 				stmt.setString(1, c.getCpf());
 				removeu = stmt.executeUpdate();
 				stmt.close();
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

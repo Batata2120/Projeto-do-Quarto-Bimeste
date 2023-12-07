@@ -63,7 +63,7 @@ public class Academia2 extends JFrame {
         funcionariosButton = new JButton("Funcionários");
         funcionariosButton.setBackground(Color.LIGHT_GRAY);
         funcionariosButton.addActionListener(e -> {
-        	cadastroF telacadastro1 = new cadastroF();
+        	CadastroFuncionario telacadastro1 = new CadastroFuncionario();
 			telacadastro1.setVisible(true);
            
         });
@@ -95,7 +95,7 @@ public class Academia2 extends JFrame {
         parceriasButton = new JButton("Parcerias");
         parceriasButton.setBackground(Color.LIGHT_GRAY);
         parceriasButton.addActionListener(e -> {
-        	cadastroP telacadastro3 = new cadastroP();
+        	CadastroLojaSuplemento telacadastro3 = new CadastroLojaSuplemento();
 			telacadastro3.setVisible(true);
            
         });

@@ -42,6 +42,7 @@ public class ClienteDAO {
 	public ArrayList<Cliente> getLista() {
 		String sql = "SELECT * FROM Clientes WHERE cpf NOT IN (SELECT cpf FROM Cliente_premium);";
 		PreparedStatement stmt;
+		TelefoneDAO telefoneConnection = new TelefoneDAO();
 		Cliente c;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
@@ -60,7 +61,11 @@ public class ClienteDAO {
 				enderecoCliente.setRua(rs.getString("rua"));
 				enderecoCliente.setNumero(rs.getString("numero"));
 				c.setEndereco(enderecoCliente);
+				ArrayList<String> telefones = new ArrayList<String>();
+				telefones = telefoneConnection.getLista(c);
+				c.setArrayTelefones(telefones);
 				Clientes.add(c);
+				
 			}
 			rs.close();
 			stmt.close();

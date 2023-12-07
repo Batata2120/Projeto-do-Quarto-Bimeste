@@ -5,20 +5,27 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import dao.*;
 import objetos.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
@@ -29,545 +36,514 @@ public class cadastro extends JFrame {
 
 	private JPanel contentPane;
 	private JTable tabela;
-	private List<Cliente> clienteList;
 	private IntermediadorCliente intermediador = new IntermediadorCliente();
 	private ArrayList<Cliente> arrayCliente = intermediador.listarClientes();
-	
-    /**
-     * Launch the application
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    cadastro frame = new cadastro();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 
-    /**
-     * Create the frame.
-     */
-    public cadastro() {
-    	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(100, 100, 600, 400);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.setLayout(new BorderLayout(0, 0));
-        setContentPane(contentPane);
+	/**
+	 * Launch the application
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					cadastro frame = new cadastro();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
-        tabela = new JTable();
-        contentPane.add(new JScrollPane(tabela), BorderLayout.CENTER);
+	/**
+	 * Create the frame.
+	 */
+	public cadastro() {
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 600, 400);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
 
-        JPanel panelBotoes = new JPanel(new GridLayout(1, 4));
-        JButton adicionarButton = new JButton("Adicionar");
-        JButton listarButton = new JButton("Listar");
+		tabela = new JTable();
+		contentPane.add(new JScrollPane(tabela), BorderLayout.CENTER);
 
-        adicionarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirTelaAdicionar();
-            }
-        });
+		JPanel panelBotoes = new JPanel(new GridLayout(1, 4));
+		JButton adicionarButton = new JButton("Adicionar");
+		JButton listarButton = new JButton("Listar");
 
+		adicionarButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				abrirTelaAdicionar();
+			}
+		});
 
-        listarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	arrayCliente = intermediador.listarClientes();
-                
-            	DefaultTableModel model = new DefaultTableModel() {
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                        // Torna todas as células não editáveis
-                        return false;
-                    }
-                };
-                model.addColumn("Nome");
-                model.addColumn("CPF");
-                model.addColumn("Ficha Corporal");
-                model.addColumn("Cep");
-                model.addColumn("Estado");
-                model.addColumn("Cidade");
-                model.addColumn("Bairro");
-                model.addColumn("Rua");
-                model.addColumn("Numero");
-                model.addColumn("Cliente Premium");
-                model.addColumn("Dieta Planejada");
-                model.addColumn("Desconto");
+		listarButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				arrayCliente = intermediador.listarClientes();
 
-                for (Cliente cliente : arrayCliente) {
-                	if(cliente instanceof ClientePremium) {
-                		Object[] rowData = {
-                    			cliente.getNome(),
-                    			cliente.getCpf(),
-                    			cliente.getFichaCorporal(),
-                    			cliente.getEndereco().getCep(),
-                    			cliente.getEndereco().getEstado(),
-                    			cliente.getEndereco().getCidade(),
-                    			cliente.getEndereco().getBairro(),
-                    			cliente.getEndereco().getRua(),
-                    			cliente.getEndereco().getNumero(),
-                    			"Sim",
-                    			((ClientePremium) cliente).getDietaPlanejada(),
-                    			((ClientePremium) cliente).getDesconto()
-                    	};
-                		model.addRow(rowData);
-                    }
-                	else if(cliente instanceof Cliente) {
-                    	Object[] rowData = {
-                    			cliente.getNome(),
-                    			cliente.getCpf(),
-                    			cliente.getFichaCorporal(),
-                    			cliente.getEndereco().getCep(),
-                    			cliente.getEndereco().getEstado(),
-                    			cliente.getEndereco().getCidade(),
-                    			cliente.getEndereco().getBairro(),
-                    			cliente.getEndereco().getRua(),
-                    			cliente.getEndereco().getNumero(),
-                    			"Não",
-                    			"-",
-                    			"-"                    			
-                    	};
-                    	model.addRow(rowData);
-                    }
-                }
-                tabela.setModel(model);
-            }
-        });
-        
-        tabela.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) { // Verifica se foi um clique duplo
-                    JTable target = (JTable) e.getSource();
-                    int row = target.getSelectedRow(); // Obtém a linha clicada
+				DefaultTableModel model = new DefaultTableModel() {
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						// Torna todas as células não editáveis
+						return false;
+					}
+				};
+				model.addColumn("Nome");
+				model.addColumn("CPF");
+				model.addColumn("Ficha Corporal");
+				model.addColumn("Cep");
+				model.addColumn("Estado");
+				model.addColumn("Cidade");
+				model.addColumn("Bairro");
+				model.addColumn("Rua");
+				model.addColumn("Numero");
+				model.addColumn("Cliente Premium");
+				model.addColumn("Dieta Planejada");
+				model.addColumn("Desconto");
 
-                    String dietaPlanejada = null;
-                    Double desconto = null;
-                    
-                    // Agora, você pode acessar os dados da linha clicada
-                    String nome = (String) tabela.getValueAt(row, 0);
-                    String cpf = (String) tabela.getValueAt(row, 1);
-                    String fichaCorporal = (String) tabela.getValueAt(row, 2);
-                    String cep = (String) tabela.getValueAt(row, 3);
-                    String estado = (String) tabela.getValueAt(row, 4);
-                    String cidade = (String) tabela.getValueAt(row, 5);
-                    String bairro = (String) tabela.getValueAt(row, 6);
-                    String rua = (String) tabela.getValueAt(row, 7);
-                    String numero = (String) tabela.getValueAt(row, 8);
-                    String clientePremium = (String) tabela.getValueAt(row, 9);
-                    if(clientePremium.equals("Sim")) {
-                    	dietaPlanejada = (String) tabela.getValueAt(row, 10);
-                    	desconto = (Double) tabela.getValueAt(row, 11);
-                    }
-                    // Crie uma nova janela com os dados da linha clicada
-                    JFrame novaJanela = new JFrame("Detalhes do Cliente");
-                    novaJanela.setSize(400, 300);
-                    novaJanela.setLayout(new GridLayout(14, 2)); // Ajustado para 11 linhas, 2 colunas
+				for (Cliente cliente : arrayCliente) {
+					if (cliente instanceof ClientePremium) {
+						Object[] rowData = { cliente.getNome(), cliente.getCpf(), cliente.getFichaCorporal(),
+								cliente.getEndereco().getCep(), cliente.getEndereco().getEstado(),
+								cliente.getEndereco().getCidade(), cliente.getEndereco().getBairro(),
+								cliente.getEndereco().getRua(), cliente.getEndereco().getNumero(), "Sim",
+								((ClientePremium) cliente).getDietaPlanejada(),
+								((ClientePremium) cliente).getDesconto() };
+						model.addRow(rowData);
+					} else if (cliente instanceof Cliente) {
+						Object[] rowData = { cliente.getNome(), cliente.getCpf(), cliente.getFichaCorporal(),
+								cliente.getEndereco().getCep(), cliente.getEndereco().getEstado(),
+								cliente.getEndereco().getCidade(), cliente.getEndereco().getBairro(),
+								cliente.getEndereco().getRua(), cliente.getEndereco().getNumero(), "Não", "-", "-" };
+						model.addRow(rowData);
+					}
+				}
+				tabela.setModel(model);
+			}
+		});
 
-                    // Adicione componentes à nova janela para exibir os detalhes do cliente
-                    JTextField nomeTextField = adicionarCampo("Nome:", nome, novaJanela);
-                    JTextField cpfTextField = adicionarCampo("CPF:", cpf, novaJanela);
-                    JTextField fichaCorporalTextField = adicionarCampo("Ficha Corporal:", fichaCorporal, novaJanela);
-                    JTextField cepTextField = adicionarCampo("CEP:", cep, novaJanela);
-                    JTextField estadoTextField = adicionarCampo("Estado:", estado, novaJanela);
-                    JTextField cidadeTextField = adicionarCampo("Cidade:", cidade, novaJanela);
-                    JTextField bairroTextField = adicionarCampo("Bairro:", bairro, novaJanela);
-                    JTextField ruaTextField = adicionarCampo("Rua:", rua, novaJanela);
-                    JTextField numeroTextField = adicionarCampo("Número:", numero, novaJanela);
-                  
-                    // Adiciona a caixa de marcação para "Cliente Premium"  
-                    JCheckBox clientePremiumCheckBox = new JCheckBox("Cliente Premium");
-                    clientePremiumCheckBox.setSelected(clientePremium.equals("Sim"));
-                    clientePremiumCheckBox.setEnabled(false); // Torna o JCheckBox não editável
-                    novaJanela.add(new JLabel("Cliente Premium:"));
-                    novaJanela.add(clientePremiumCheckBox);
-                    if(clientePremium.equals("Sim")) {
-                    	 JTextField dietaPlanejadaField = adicionarCampo("Dieta planjada:", dietaPlanejada, novaJanela);
-                    	 dietaPlanejadaField.setColumns(2);
-                         JTextField descontoField = adicionarCampo("Desconto:", String.valueOf(desconto), novaJanela);
-                    }
-                    
-                    JButton acaoButton = new JButton("Editar");
-                    JButton removerButton = new JButton("Remover");
-                    
-                    removerButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            intermediador.remover(new Cliente(nome, new Endereco(cep, estado, cidade, bairro, rua, numero), cpf, fichaCorporal));
-                            arrayCliente = intermediador.listarClientes();
-                            boolean flag = false;
-                            for(Cliente cliente : arrayCliente) {
-                            	if(cliente.getCpf().equals(cpf)) {
-                            		flag = true;
-                            	}
-                            }
-                        	listarClientes(tabela);
-                            if(!(flag)) {
-                            	novaJanela.dispose();
-                            }
-                        }
-                    });
-                    novaJanela.add(acaoButton);
-                    novaJanela.add(removerButton);
+		tabela.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) { // Verifica se foi um clique duplo
+					JTable target = (JTable) e.getSource();
+					int row = target.getSelectedRow(); // Obtém a linha clicada
 
-                    acaoButton.addActionListener(new ActionListener() {
-                        private boolean modoEditar = true;
+					String dietaPlanejada = null;
+					Double desconto = null;
 
-                        public void actionPerformed(ActionEvent e) {
-                            if (modoEditar) {
-                                // Modo "Editar"
-                                nomeTextField.setEditable(true);
-                                cpfTextField.setEditable(true);
-                                fichaCorporalTextField.setEditable(true);
-                                cepTextField.setEditable(true);
-                                estadoTextField.setEditable(true);
-                                cidadeTextField.setEditable(true);
-                                bairroTextField.setEditable(true);
-                                ruaTextField.setEditable(true);
-                                numeroTextField.setEditable(true);
+					// Agora, você pode acessar os dados da linha clicada
+					String nome = (String) tabela.getValueAt(row, 0);
+					String cpf = (String) tabela.getValueAt(row, 1);
+					String fichaCorporal = (String) tabela.getValueAt(row, 2);
+					String cep = (String) tabela.getValueAt(row, 3);
+					String estado = (String) tabela.getValueAt(row, 4);
+					String cidade = (String) tabela.getValueAt(row, 5);
+					String bairro = (String) tabela.getValueAt(row, 6);
+					String rua = (String) tabela.getValueAt(row, 7);
+					String numero = (String) tabela.getValueAt(row, 8);
+					String clientePremium = (String) tabela.getValueAt(row, 9);
+					if (clientePremium.equals("Sim")) {
+						dietaPlanejada = (String) tabela.getValueAt(row, 10);
+						desconto = (Double) tabela.getValueAt(row, 11);
+					}
+					// Crie uma nova janela com os dados da linha clicada
+					JFrame novaJanela = new JFrame("Detalhes do Cliente");
+					novaJanela.setSize(400, 300);
+					novaJanela.setLayout(new GridLayout(14, 2)); // Ajustado para 11 linhas, 2 colunas
 
-                                acaoButton.setText("Enviar");
-                            } else {
-                                // Modo "Enviar"
-                                // Obtenha os valores dos campos de texto e realize a ação desejada
-                                String novoNome = nomeTextField.getText();
-                                String novoCpf = cpfTextField.getText();
-                                String novaFichaCorporal = fichaCorporalTextField.getText();
-                                String novoCep = cepTextField.getText();
-                                String novoEstado = estadoTextField.getText();
-                                String novaCidade = cidadeTextField.getText();
-                                String novoBairro = bairroTextField.getText();
-                                String novaRua = ruaTextField.getText();
-                                String novoNumero = numeroTextField.getText();
-                
-                                // Execute a lógica desejada com os novos valores
-                                Cliente cliente = new Cliente(novoNome, new Endereco(novoCep, novoEstado, novaCidade, novoBairro, novaRua, novoNumero), novoCpf, novaFichaCorporal);
-                                int deuCerto = intermediador.editar(cliente);
-                                if(deuCerto == 0) {
-                                	listarClientes(tabela);
-                                	JOptionPane.showMessageDialog(novaJanela, "Não foi possivel editar");
-                                	novaJanela.dispose();
-                                }else {
-                                	listarClientes(tabela);
-                                	JOptionPane.showMessageDialog(novaJanela, "Cliente editado com sucesso");
-                                	novaJanela.dispose();
-                                }
-                                // ...
+					// Adicione componentes à nova janela para exibir os detalhes do cliente
+					JTextField nomeTextField = adicionarCampo("Nome:", nome, novaJanela);
+					JTextField cpfTextField = adicionarCampo("CPF:", cpf, novaJanela);
+					JTextField fichaCorporalTextField = adicionarCampo("Ficha Corporal:", fichaCorporal, novaJanela);
+					JTextField cepTextField = adicionarCampo("CEP:", cep, novaJanela);
+					JTextField estadoTextField = adicionarCampo("Estado:", estado, novaJanela);
+					JTextField cidadeTextField = adicionarCampo("Cidade:", cidade, novaJanela);
+					JTextField bairroTextField = adicionarCampo("Bairro:", bairro, novaJanela);
+					JTextField ruaTextField = adicionarCampo("Rua:", rua, novaJanela);
+					JTextField numeroTextField = adicionarCampo("Número:", numero, novaJanela);
 
-                                acaoButton.setText("Editar");
+					// Adiciona a caixa de marcação para "Cliente Premium"
+					JCheckBox clientePremiumCheckBox = new JCheckBox("Cliente Premium");
+					clientePremiumCheckBox.setSelected(clientePremium.equals("Sim"));
+					clientePremiumCheckBox.setEnabled(false); // Torna o JCheckBox não editável
+					novaJanela.add(new JLabel("Cliente Premium:"));
+					novaJanela.add(clientePremiumCheckBox);
+					JTextField dietaPlanejadaField = adicionarCampo("Dieta planjada:", dietaPlanejada, novaJanela);
+					dietaPlanejadaField.setColumns(2);
+					JTextField descontoField = adicionarCampo("Desconto:", String.valueOf(desconto), novaJanela);
+					clientePremiumCheckBox.addItemListener(new ItemListener() {
+						public void itemStateChanged(ItemEvent e) {
+							if (e.getStateChange() == ItemEvent.SELECTED) {
+								// Habilita os campos de texto para dieta e desconto quando a caixa está marcada
+								dietaPlanejadaField.setEditable(true);
+								descontoField.setEditable(true);
+							} else {
+								// Desabilita os campos de texto quando a caixa está desmarcada
+								dietaPlanejadaField.setEditable(false);
+								descontoField.setEditable(false);
+							}
+						}
+					});
 
-                                // Desabilite a edição após enviar
-                                nomeTextField.setEditable(false);
-                                cpfTextField.setEditable(false);
-                                fichaCorporalTextField.setEditable(false);
-                                cepTextField.setEditable(false);
-                                estadoTextField.setEditable(false);
-                                cidadeTextField.setEditable(false);
-                                bairroTextField.setEditable(false);
-                                ruaTextField.setEditable(false);
-                                numeroTextField.setEditable(false);
+					JButton acaoButton = new JButton("Editar");
+					JButton removerButton = new JButton("Remover");
 
-                            }
+					removerButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							intermediador.remover(new Cliente(nome,
+									new Endereco(cep, estado, cidade, bairro, rua, numero), cpf, fichaCorporal));
+							arrayCliente = intermediador.listarClientes();
+							boolean flag = false;
+							for (Cliente cliente : arrayCliente) {
+								if (cliente.getCpf().equals(cpf)) {
+									flag = true;
+								}
+							}
+							listarClientes(tabela);
+							if (!(flag)) {
+								novaJanela.dispose();
+							}
+						}
+					});
+					novaJanela.add(acaoButton);
+					novaJanela.add(removerButton);
 
-                            modoEditar = !modoEditar;
-                        }
-                    });
+					acaoButton.addActionListener(new ActionListener() {
+						private boolean modoEditar = true;
 
-                    novaJanela.setVisible(true);
-                }
-            }
+						public void actionPerformed(ActionEvent e) {
+							if (modoEditar) {
+								// Modo "Editar"
+								nomeTextField.setEditable(true);
+								fichaCorporalTextField.setEditable(true);
+								cepTextField.setEditable(true);
+								estadoTextField.setEditable(true);
+								cidadeTextField.setEditable(true);
+								bairroTextField.setEditable(true);
+								ruaTextField.setEditable(true);
+								numeroTextField.setEditable(true);
+								clientePremiumCheckBox.setEnabled(true);
+								if (clientePremium.equals("Sim")) {
+									dietaPlanejadaField.setEditable(true);
+									descontoField.setEditable(true);
+								}
 
-            private JTextField adicionarCampo(String rotulo, String valor, JFrame janela) {
-                JLabel label = new JLabel(rotulo);
-                JTextField campoTexto = new JTextField(valor);
-                campoTexto.setEditable(false); // Torna o campo de texto não editável
+								acaoButton.setText("Enviar");
+							} else {
+								// Modo "Enviar"
+								// Obtenha os valores dos campos de texto e realize a ação desejada
+								String novoNome = nomeTextField.getText();
+								String novoCpf = cpfTextField.getText();
+								String novaFichaCorporal = fichaCorporalTextField.getText();
+								String novoCep = cepTextField.getText();
+								String novoEstado = estadoTextField.getText();
+								String novaCidade = cidadeTextField.getText();
+								String novoBairro = bairroTextField.getText();
+								String novaRua = ruaTextField.getText();
+								String novoNumero = numeroTextField.getText();
+								String novaDietaPlanejada = dietaPlanejadaField.getText();
+								String novoDescontoString = descontoField.getText();
+								double novoDesconto = 0;
+								if (novoDescontoString == null) {
+									novoDesconto = 0;
+								} else {
+									try {
+										novoDesconto = Double.parseDouble(novoDescontoString.replace(",", "."));
+									} catch (Exception ex) {
+										novoDesconto = 0;
+									}
+								}
 
-                janela.add(label);
-                janela.add(campoTexto);
+								if (clientePremiumCheckBox.isSelected()) {
+									if (clientePremium.equals("Sim")) {
+										ClientePremium clienteP = new ClientePremium(novoNome,
+												new Endereco(novoCep, novoEstado, novaCidade, novoBairro, novaRua,
+														novoNumero),
+												novoCpf, novaFichaCorporal, novaDietaPlanejada, novoDesconto);
+										intermediador.editarPremium(clienteP);
+									} else {
+										ClientePremium clienteP = new ClientePremium(novoNome,
+												new Endereco(novoCep, novoEstado, novaCidade, novoBairro, novaRua,
+														novoNumero),
+												novoCpf, novaFichaCorporal, novaDietaPlanejada, novoDesconto);
+										intermediador.inserirPremium(clienteP);
+									}
+								} else {
+									if (clientePremium.equals("Sim")) {
+										ClientePremium clienteP = new ClientePremium(novoNome,
+												new Endereco(novoCep, novoEstado, novaCidade, novoBairro, novaRua,
+														novoNumero),
+												novoCpf, novaFichaCorporal, novaDietaPlanejada, novoDesconto);
+										intermediador.removerPremium(clienteP);
+									}
+								}
 
-                return campoTexto;
-            }
-        });
+								// Execute a lógica desejada com os novos valores
+								Cliente cliente = new Cliente(novoNome,
+										new Endereco(novoCep, novoEstado, novaCidade, novoBairro, novaRua, novoNumero),
+										novoCpf, novaFichaCorporal);
+								int deuCerto = intermediador.editar(cliente);
+								if (deuCerto == 0) {
+									listarClientes(tabela);
+									JOptionPane.showMessageDialog(novaJanela, "Não foi possivel editar");
+									novaJanela.dispose();
+								} else {
+									listarClientes(tabela);
+									JOptionPane.showMessageDialog(novaJanela, "Cliente editado com sucesso");
+									novaJanela.dispose();
+								}
+								// ...
 
-        
-        panelBotoes.add(adicionarButton);
-        panelBotoes.add(listarButton);
-        
-        
+								acaoButton.setText("Editar");
 
-        contentPane.add(panelBotoes, BorderLayout.SOUTH);
+								// Desabilite a edição após enviar
+								nomeTextField.setEditable(false);
+								cpfTextField.setEditable(false);
+								fichaCorporalTextField.setEditable(false);
+								cepTextField.setEditable(false);
+								estadoTextField.setEditable(false);
+								cidadeTextField.setEditable(false);
+								bairroTextField.setEditable(false);
+								ruaTextField.setEditable(false);
+								numeroTextField.setEditable(false);
 
-        setVisible(true);
-    }
+							}
 
-    private void abrirTelaAdicionar() {
-        JFrame telaAdicionar = new JFrame("Adicionar Cliente");
-        telaAdicionar.setSize(400, 300);
-        telaAdicionar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+							modoEditar = !modoEditar;
+						}
+					});
 
-        JPanel panel = new JPanel(new GridLayout(6, 2));
-        panel.add(new JLabel("Nome:"));
-        JTextField nomeTextField = new JTextField();
-        panel.add(nomeTextField);
+					novaJanela.setVisible(true);
 
-        panel.add(new JLabel("CPF:"));
-        JTextField cpfTextField = new JTextField();
-        panel.add(cpfTextField);
+					Cliente clienteTelefone = new Cliente();
+					for (int i = 0; i < arrayCliente.size(); i++) {
+						if (arrayCliente.get(i).getCpf().equals(cpf)) {
+							clienteTelefone = arrayCliente.get(i);
+							break;
+						}
+					}
 
-        panel.add(new JLabel("Ficha Corporal:"));
-        JTextField fichaTextField = new JTextField();
-        panel.add(fichaTextField);
+					// Crie uma nova janela para exibir os telefones
+					JFrame telefoneJanela = new JFrame("Telefones");
+					telefoneJanela.setSize(400, 300);
+					telefoneJanela.setLayout(new GridLayout(14, 2));
 
-        panel.add(new JLabel("Endereço:"));
-        JTextField enderecoTextField = new JTextField();
-        panel.add(enderecoTextField);
+					int i = 0;
 
-        panel.add(new JLabel("Cliente Premium (S/N):"));
-        JTextField premiumTextField = new JTextField();
-        panel.add(premiumTextField);
+					// Iterar sobre os telefones existentes do cliente e adicionar campos com botões
+					for (String telefone : clienteTelefone.getArrayTelefones()) {
+						i++;
+						JTextField telefoneField = adicionarCampo("Telefone " + i, telefone, telefoneJanela);
 
-        JButton cadastrarButton = new JButton("Cadastrar");
-        cadastrarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	
-            	String nome = nomeTextField.getText();
-                String cpf = cpfTextField.getText();
-                String fichaCorporal = fichaTextField.getText();
-                String endereco = enderecoTextField.getText();
+						// Adicionar botão ao lado de cada campo de telefone
+						JButton removerTelefoneExistenteButton = new JButton("Remover");
+						telefoneJanela.add(removerTelefoneExistenteButton);
+						Cliente clienteTelefone1 = clienteTelefone;
+						removerTelefoneExistenteButton.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								// Obtenha o telefone associado a este campo
+								String telefoneRemover = telefoneField.getText();
 
-                
+								// Remova o telefone do cliente
+								int resultadoRemocao = intermediador.removerTelefone(telefoneRemover, clienteTelefone1);
+								if (resultadoRemocao == 0) {
+									JOptionPane.showMessageDialog(telefoneJanela,
+											"Não foi possível remover o telefone.");
+									listarClientes(tabela);
+									telefoneJanela.dispose();
+									novaJanela.dispose();
+								} else {
+									JOptionPane.showMessageDialog(telefoneJanela, "Telefone removido com sucesso");
+									listarClientes(tabela);
+									telefoneJanela.dispose();
+									novaJanela.dispose();
+								}
+							}
+						});
+					}
+					JLabel label = new JLabel("Novo telefone:");
+					JTextField campoTexto = new JTextField("");
+					telefoneJanela.add(label);
+					telefoneJanela.add(campoTexto);
+					Cliente clienteTelefone1 = clienteTelefone;
+					// Adicione um botão para inserir novo telefone
+					JButton inserirTelefoneButton = new JButton("Inserir");
+					inserirTelefoneButton.addActionListener(new ActionListener() {
+					    public void actionPerformed(ActionEvent e) {
+					        // Obtenha o texto atual no campo de texto
+					        String novoTelefone = campoTexto.getText().trim();
 
-                JOptionPane.showMessageDialog(null, "Cliente cadastrado!");
-                telaAdicionar.dispose();
-                displayClientData();
-            }
-        });
-        panel.add(cadastrarButton);
+					        // Verifique se o texto não está vazio antes de realizar a inserção
+					        if (!novoTelefone.isEmpty()) {
+					            // Insira o novo telefone para o cliente
+					            int resultadoInsercao = intermediador.inserirTelefone(novoTelefone, clienteTelefone1);
+					            if (resultadoInsercao == 0) {
+									JOptionPane.showMessageDialog(telefoneJanela,
+											"Não foi possível inserir o telefone.");
+									listarClientes(tabela);
+									telefoneJanela.dispose();
+									novaJanela.dispose();
+								} else {
+									JOptionPane.showMessageDialog(telefoneJanela, "Telefone inserido com sucesso");
+									listarClientes(tabela);
+									telefoneJanela.dispose();
+									novaJanela.dispose();
+								}
+					        }
+					    }
+					});
+					telefoneJanela.add(inserirTelefoneButton);
+					telefoneJanela.setVisible(true);
+				}
+			}
 
-        telaAdicionar.add(panel);
-        telaAdicionar.setVisible(true);
-    }
+			private JTextField adicionarCampo(String rotulo, String valor, JFrame janela) {
+				JLabel label = new JLabel(rotulo);
+				JTextField campoTexto = new JTextField(valor);
+				campoTexto.setEditable(false); // Torna o campo de texto não editável
+				janela.add(label);
+				janela.add(campoTexto);
 
-    private void abrirTelaRemover() {
-        JFrame telaRemover = new JFrame("Remover Cliente");
-        telaRemover.setSize(300, 150);
-        telaRemover.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				return campoTexto;
+			}
+		});
 
-        JPanel panel = new JPanel(new GridLayout(3, 2));
-        panel.add(new JLabel("Nome do Cliente:"));
-        JTextField nomeClienteTextField = new JTextField();
-        panel.add(nomeClienteTextField);
+		panelBotoes.add(adicionarButton);
+		panelBotoes.add(listarButton);
 
-        panel.add(new JLabel("CPF do Cliente:"));
-        JTextField cpfClienteTextField = new JTextField();
-        panel.add(cpfClienteTextField);
+		contentPane.add(panelBotoes, BorderLayout.SOUTH);
 
-        JButton removerButton = new JButton("Remover");
-        removerButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	String nomeCliente = nomeClienteTextField.getText();
-                String cpfCliente = cpfClienteTextField.getText();
+		setVisible(true);
+	}
 
-               
-                Cliente clienteToRemove = findCliente(nomeCliente, cpfCliente);
+	private void abrirTelaAdicionar() {
+		JFrame telaAdicionar = new JFrame("Adicionar Cliente");
+		telaAdicionar.setSize(400, 300);
+		telaAdicionar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-                
-                if (clienteToRemove != null) {
-                    clienteList.remove(clienteToRemove);
-                    JOptionPane.showMessageDialog(null, "Cliente removido!");
-                } else {
-                    
-                    JOptionPane.showMessageDialog(null, "Cliente não encontrado!");
-                }
+		JPanel panel = new JPanel(new GridLayout(10, 2));
+		panel.add(new JLabel("Nome:"));
+		JTextField nomeTextField = new JTextField();
+		panel.add(nomeTextField);
 
-               
-                telaRemover.dispose();
+		panel.add(new JLabel("CPF:"));
+		JTextField cpfTextField = new JTextField();
+		panel.add(cpfTextField);
 
-               
-                displayClientData();
-            }
-        });
-        panel.add(removerButton);
+		panel.add(new JLabel("Ficha Corporal:"));
+		JTextField fichaTextField = new JTextField();
+		panel.add(fichaTextField);
 
-        telaRemover.add(panel);
-        telaRemover.setVisible(true);
-    }
-    //Ajuda na busca por cliente
-    private Cliente findCliente(String nome, String cpf) {
-        for (Cliente cliente : clienteList) {
-            if (cliente.getNome().equals(nome) && cliente.getCpf().equals(cpf)) {
-                return cliente;
-            }
-        }
-        return null; 
-    }
-    
+		panel.add(new JLabel("Cep:"));
+		JTextField cepTextField = new JTextField();
+		panel.add(cepTextField);
 
-    private void abrirTelaEditar() {
-        JFrame telaEditar = new JFrame("Editar Cliente");
-        telaEditar.setSize(400, 300);
-        telaEditar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		panel.add(new JLabel("Estado:"));
+		JTextField estadoTextField = new JTextField();
+		panel.add(estadoTextField);
+		
+		panel.add(new JLabel("Cidade:"));
+		JTextField cidadeTextField = new JTextField();
+		panel.add(cidadeTextField);
+		
+		panel.add(new JLabel("Bairro:"));
+		JTextField bairroTextField = new JTextField();
+		panel.add(bairroTextField);
+		
+		panel.add(new JLabel("Rua:"));
+		JTextField ruaTextField = new JTextField();
+		panel.add(ruaTextField);
+		
+		panel.add(new JLabel("Numero:"));
+		JTextField numeroTextField = new JTextField();
+		panel.add(numeroTextField);
 
-        JPanel panel = new JPanel(new GridLayout(6, 2));
-        panel.add(new JLabel("Nome do Cliente:"));
-        JTextField nomeClienteTextField = new JTextField();
-        panel.add(nomeClienteTextField);
+		JButton cadastrarButton = new JButton("Cadastrar");
+		cadastrarButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 
-        panel.add(new JLabel("CPF do Cliente:"));
-        JTextField cpfClienteTextField = new JTextField();
-        panel.add(cpfClienteTextField);
+				String nome = nomeTextField.getText();
+				String cpf = cpfTextField.getText();
+				String fichaCorporal = fichaTextField.getText();
+				String cep = cepTextField.getText();
+				String estado = estadoTextField.getText();
+				String cidade = cidadeTextField.getText();
+				String bairro = bairroTextField.getText();
+				String rua = ruaTextField.getText();
+				String numero = numeroTextField.getText();
+				Endereco enderecoNovo = new Endereco(cep, estado, cidade, bairro, rua, numero);
+				Cliente clienteNovo = new Cliente(nome, enderecoNovo, cpf, fichaCorporal);
+				
+				int deuCerto = intermediador.inserir(clienteNovo);
+				if(deuCerto != 0) {
+					listarClientes(tabela);
+					JOptionPane.showMessageDialog(telaAdicionar, "Cliente cadastrado!");
+					telaAdicionar.dispose();
+				}else {
+					listarClientes(tabela);
+					JOptionPane.showMessageDialog(telaAdicionar, "Ocorreu um erro ao cadastrar o cliente");
+					telaAdicionar.dispose();
+				}
+			}
+		});
+		panel.add(cadastrarButton);
 
-        panel.add(new JLabel("Novo Nome:"));
-        JTextField novoNomeTextField = new JTextField();
-        panel.add(novoNomeTextField);
+		telaAdicionar.add(panel);
+		telaAdicionar.setVisible(true);
+	}
 
-        panel.add(new JLabel("Novo CPF:"));
-        JTextField novoCpfTextField = new JTextField();
-        panel.add(novoCpfTextField);
+	// Método para listar os telefones do cliente na lista
+	private void listarTelefones(Cliente cliente, DefaultListModel<String> model) {
+		model.clear();
+		ArrayList<String> telefones = intermediador.listarTelefones(cliente);
+		for (String telefone : telefones) {
+			model.addElement(telefone);
+		}
+	}
 
-        panel.add(new JLabel("Nova Ficha Corporal:"));
-        JTextField novaFichaTextField = new JTextField();
-        panel.add(novaFichaTextField);
+	public void listarClientes(JTable tabelaEscolhida) {
+		arrayCliente = intermediador.listarClientes();
 
-        panel.add(new JLabel("Novo Endereço:"));
-        JTextField novoEnderecoTextField = new JTextField();
-        panel.add(novoEnderecoTextField);
+		DefaultTableModel model = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// Torna todas as células não editáveis
+				return false;
+			}
+		};
+		model.addColumn("Nome");
+		model.addColumn("CPF");
+		model.addColumn("Ficha Corporal");
+		model.addColumn("Cep");
+		model.addColumn("Estado");
+		model.addColumn("Cidade");
+		model.addColumn("Bairro");
+		model.addColumn("Rua");
+		model.addColumn("Numero");
+		model.addColumn("Cliente Premium");
+		model.addColumn("Dieta Planejada");
+		model.addColumn("Desconto");
 
-        panel.add(new JLabel("Cliente Premium (S/N):"));
-        JTextField novoPremiumTextField = new JTextField();
-        panel.add(novoPremiumTextField);
+		for (Cliente cliente : arrayCliente) {
+			if (cliente instanceof ClientePremium) {
+				Object[] rowData = { cliente.getNome(), cliente.getCpf(), cliente.getFichaCorporal(),
+						cliente.getEndereco().getCep(), cliente.getEndereco().getEstado(),
+						cliente.getEndereco().getCidade(), cliente.getEndereco().getBairro(),
+						cliente.getEndereco().getRua(), cliente.getEndereco().getNumero(), "Sim",
+						((ClientePremium) cliente).getDietaPlanejada(), ((ClientePremium) cliente).getDesconto() };
+				model.addRow(rowData);
+			} else if (cliente instanceof Cliente) {
+				Object[] rowData = { cliente.getNome(), cliente.getCpf(), cliente.getFichaCorporal(),
+						cliente.getEndereco().getCep(), cliente.getEndereco().getEstado(),
+						cliente.getEndereco().getCidade(), cliente.getEndereco().getBairro(),
+						cliente.getEndereco().getRua(), cliente.getEndereco().getNumero(), "Não", "-", "-" };
+				model.addRow(rowData);
+			}
+		}
+		tabelaEscolhida.setModel(model);
+	}
 
-        JButton editarButton = new JButton("Editar");
-        editarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	String nomeCliente = nomeClienteTextField.getText();
-                String cpfCliente = cpfClienteTextField.getText();
-                String novoNome = novoNomeTextField.getText();
-                String novoCpf = novoCpfTextField.getText();
-                String novaFicha = novaFichaTextField.getText();
-                String novoEndereco = novoEnderecoTextField.getText();
-                String novoPremium = novoPremiumTextField.getText();
-
-                
-                Cliente clienteE = findCliente(nomeCliente, cpfCliente);
-               
-                if (clienteE != null) {
-                    clienteE.setNome(novoNome);
-                    clienteE.setCpf(novoCpf);
-                    clienteE.setFichaCorporal(novaFicha);
-
-                    JOptionPane.showMessageDialog(null, "Cliente editado!");
-                } else {        
-                    JOptionPane.showMessageDialog(null, "Cliente não encontrado!");
-                }
-
-                telaEditar.dispose();  
-                displayClientData();
-            }
-        });
-        panel.add(editarButton);
-
-        telaEditar.add(panel);
-        telaEditar.setVisible(true);
-    }
-    
-    private void displayClientData() {
-        
-        String[] columnNames = {"Nome", "CPF", "Ficha Corporal", "Endereço"};
-
-        
-        DefaultTableModel model = new DefaultTableModel(getClientDataArray(), columnNames);
-
-        
-        tabela.setModel(model);
-    }
-
-    private Object[][] getClientDataArray() {
-        
-        Object[][] data = new Object[clienteList.size()][5];
-
-        for (int i = 0; i < clienteList.size(); i++) {
-            Cliente cliente = clienteList.get(i);
-            data[i][0] = cliente.getNome();
-            data[i][1] = cliente.getCpf();
-            data[i][2] = cliente.getFichaCorporal();
-            data[i][3] = cliente.getEndereco();
-
-        }
-
-        return data;
-    }
-	
-    
-    public void listarClientes(JTable tabelaEscolhida) {
-    	arrayCliente = intermediador.listarClientes();
-        
-    	DefaultTableModel model = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                // Torna todas as células não editáveis
-                return false;
-            }
-        };
-        model.addColumn("Nome");
-        model.addColumn("CPF");
-        model.addColumn("Ficha Corporal");
-        model.addColumn("Cep");
-        model.addColumn("Estado");
-        model.addColumn("Cidade");
-        model.addColumn("Bairro");
-        model.addColumn("Rua");
-        model.addColumn("Numero");
-        model.addColumn("Cliente Premium");
-        model.addColumn("Dieta Planejada");
-        model.addColumn("Desconto");
-
-        for (Cliente cliente : arrayCliente) {
-        	if(cliente instanceof ClientePremium) {
-        		Object[] rowData = {
-            			cliente.getNome(),
-            			cliente.getCpf(),
-            			cliente.getFichaCorporal(),
-            			cliente.getEndereco().getCep(),
-            			cliente.getEndereco().getEstado(),
-            			cliente.getEndereco().getCidade(),
-            			cliente.getEndereco().getBairro(),
-            			cliente.getEndereco().getRua(),
-            			cliente.getEndereco().getNumero(),
-            			"Sim",
-            			((ClientePremium) cliente).getDietaPlanejada(),
-            			((ClientePremium) cliente).getDesconto()
-            	};
-        		model.addRow(rowData);
-            }
-        	else if(cliente instanceof Cliente) {
-            	Object[] rowData = {
-            			cliente.getNome(),
-            			cliente.getCpf(),
-            			cliente.getFichaCorporal(),
-            			cliente.getEndereco().getCep(),
-            			cliente.getEndereco().getEstado(),
-            			cliente.getEndereco().getCidade(),
-            			cliente.getEndereco().getBairro(),
-            			cliente.getEndereco().getRua(),
-            			cliente.getEndereco().getNumero(),
-            			"Não",
-            			"-",
-            			"-"                    			
-            	};
-            	model.addRow(rowData);
-            }
-        }
-        tabelaEscolhida.setModel(model);
-    }
-    
-    
 }
-
-
-
-
-

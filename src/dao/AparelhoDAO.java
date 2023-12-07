@@ -18,15 +18,14 @@ public class AparelhoDAO {
 
 	public int inserir(Aparelho c) {
 		int inseriu = 0;
-		String sql = "INSERT INTO Aparelho(qualidade, preco, id, marca, CNPJ_Academia) VALUES (?,?,?,?,?);";
+		String sql = "INSERT INTO Aparelho(qualidade, preco, marca, CNPJ_Academia) VALUES (?,?,?,?);";
 		PreparedStatement stmt;
 		try {
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
 			stmt.setString(1, c.getQualidade());
 			stmt.setDouble(2, c.getPreco());
-			stmt.setInt(3, c.getId());
-			stmt.setString(4, c.getMarca());
-			stmt.setString(5, c.getCnpj_academia());
+			stmt.setString(3, c.getMarca());
+			stmt.setString(4, c.getCnpj_academia());
 			inseriu = stmt.executeUpdate();
 			stmt.close();
 		} catch (SQLException e) {
@@ -60,6 +59,7 @@ public class AparelhoDAO {
 		}
 		return null;
 	}
+
 	public ArrayList<Aparelho> getLista(Academia ac) {
 		String sql = "SELECT * FROM Aparelho WHERE CNPJ_Academia=?;";
 		PreparedStatement stmt;
@@ -86,6 +86,7 @@ public class AparelhoDAO {
 		}
 		return null;
 	}
+
 	public int remover(Aparelho c) {
 		int removeu = 0;
 		int removeuAparelho = 0;
@@ -97,12 +98,11 @@ public class AparelhoDAO {
 			stmtAparelhoCliente = (PreparedStatement) connection.prepareStatement(sqlAparelhoCliente);
 			stmtAparelhoCliente.setInt(1, c.getId());
 			removeuAparelho = stmtAparelhoCliente.executeUpdate();
-			if (removeuAparelho == 1) {
-				stmt = (PreparedStatement) connection.prepareStatement(sql);
-				stmt.setInt(1, c.getId());
-				removeu = stmt.executeUpdate();
-				stmt.close();
-			}
+			stmtAparelhoCliente.close();
+			stmt = (PreparedStatement) connection.prepareStatement(sql);
+			stmt.setInt(1, c.getId());
+			removeu = stmt.executeUpdate();
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

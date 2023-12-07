@@ -5,8 +5,13 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import dao.*;
+import intermediador.IntermediadorAparelho;
+import intermediador.IntermediadorCliente;
 import objetos.*;
 import principal.*;
 import javax.swing.JButton;
@@ -25,7 +30,8 @@ public class cadastroA extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable tabela;
-    private List<Aparelho> aparelhoList;
+	private IntermediadorAparelho intermediador = new IntermediadorAparelho();
+	private ArrayList<Aparelho> arrayAparelho = intermediador.listarAparelhos();
 
 	/**
 	 * Launch the application.
@@ -59,8 +65,6 @@ public class cadastroA extends JFrame {
 
         JPanel panelBotoes = new JPanel(new GridLayout(1, 4));
         JButton adicionarButton = new JButton("Adicionar");
-        JButton removerButton = new JButton("Remover");
-        JButton editarButton = new JButton("Editar");
         JButton listarButton = new JButton("Listar");
 
         adicionarButton.addActionListener(new ActionListener() {
@@ -68,50 +72,154 @@ public class cadastroA extends JFrame {
                 abrirTelaAdicionar();
             }
         });
-
-        removerButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirTelaRemover();
-            }
-        });
-
-        editarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                abrirTelaEditar();
-            }
-        });
-
+        // String qualidade, double preco, int id, String cnpj_academia, String marca
         listarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                List<Aparelho> aparelhoList = Aparelho.getAparelhoList();
+			public void actionPerformed(ActionEvent e) {
+				arrayAparelho = intermediador.listarAparelhos();
 
-                DefaultTableModel model = new DefaultTableModel();
-                model.addColumn("ID");
-                model.addColumn("Qualidade");
-                model.addColumn("Preço");
-                model.addColumn("CNPJ da Academia");
+				DefaultTableModel model = new DefaultTableModel() {
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						// Torna todas as células não editáveis
+						return false;
+					}
+				};
+				model.addColumn("Id");
+				model.addColumn("Qualidade");
+				model.addColumn("Preço");
+				model.addColumn("Marca");
 
-                for (Aparelho aparelho : aparelhoList) {
-                    Object[] rowData = {
-                            aparelho.getId(),
-                            aparelho.getQualidade(),
-                            aparelho.getPreco(),
-                            aparelho.getCnpjAcademia()
-                    };
-                    model.addRow(rowData);
-                }
-                tabela.setModel(model);
-            }
+				for (Aparelho Aparelho : arrayAparelho) {
+						Object[] rowData = { Aparelho.getId(), Aparelho.getQualidade(), Aparelho.getPreco(), Aparelho.getMarca()};
+						model.addRow(rowData);
+
+				}
+				tabela.setModel(model);
+			}
+		});
+        
+        tabela.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			    if (e.getClickCount() == 2) { // Verifica se foi um clique duplo
+			        JTable target = (JTable) e.getSource();
+			        int row = target.getSelectedRow(); // Obtém a linha clicada
+
+			        // Agora, você pode acessar os dados da linha clicada
+			        int id = (Integer) tabela.getValueAt(row, 0);
+			        String qualidade = (String) tabela.getValueAt(row, 1);
+			        double preco = (Double) tabela.getValueAt(row, 2);
+			        String marca = (String) tabela.getValueAt(row, 3);
+
+			        // Crie uma nova janela com os dados da linha clicada
+			        JFrame novaJanela = new JFrame("Detalhes do Aparelho");
+			        novaJanela.setSize(400, 300);
+			        novaJanela.setLayout(new GridLayout(14, 2)); // Ajustado para 14 linhas, 2 colunas
+
+			        // Adicione componentes à nova janela para exibir os detalhes do aparelho
+			        JTextField idTextField = adicionarCampo("ID:", String.valueOf(id), novaJanela);
+			        JTextField qualidadeTextField = adicionarCampo("Qualidade:", qualidade, novaJanela);
+			        JTextField precoTextField = adicionarCampo("Preço:", String.valueOf(preco), novaJanela);
+			        JTextField marcaTextField = adicionarCampo("Marca:", marca, novaJanela);
+
+			        JButton acaoButton = new JButton("Editar");
+			        JButton removerButton = new JButton("Remover");
+
+			        removerButton.addActionListener(new ActionListener() {
+			            public void actionPerformed(ActionEvent e) {
+			                String cnpjAcademia = null;
+			                arrayAparelho = intermediador.listarAparelhos();
+			                for (Aparelho aparelho : arrayAparelho) {
+			                    if (aparelho.getId() == id) {
+			                        cnpjAcademia = aparelho.getCnpj_academia();
+			                    }
+			                }
+
+			                intermediador.remover(new Aparelho(qualidade, preco, id, cnpjAcademia, marca));
+			                arrayAparelho = intermediador.listarAparelhos();
+			                boolean flag = false;
+			                for (Aparelho aparelho : arrayAparelho) {
+			                    if (aparelho.getId() == id) {
+			                        flag = true;
+			                    }
+			                }
+			                listarAparelhos(tabela);
+			                if (!flag) {
+			                    JOptionPane.showMessageDialog(novaJanela, "Aparelho removido com sucesso!");
+			                } else {
+			                    JOptionPane.showMessageDialog(novaJanela, "Ocorreu um erro ao remover o aparelho.");
+			                }
+			                novaJanela.dispose();
+			            }
+			        });
+
+			        novaJanela.add(acaoButton);
+			        novaJanela.add(removerButton);
+
+			        acaoButton.addActionListener(new ActionListener() {
+			            private boolean modoEditar = true;
+
+			            public void actionPerformed(ActionEvent e) {
+			                if (modoEditar) {
+			                    // Modo "Editar"
+			                    qualidadeTextField.setEditable(true);
+			                    precoTextField.setEditable(true);
+			                    marcaTextField.setEditable(true);
+
+			                    acaoButton.setText("Enviar");
+			                } else {
+			                    // Modo "Enviar"
+			                    // Obtenha os valores dos campos de texto e realize a ação desejada
+			                    int novoId = Integer.parseInt(idTextField.getText());
+			                    String novaQualidade = qualidadeTextField.getText();
+			                    double novoPreco = Double.parseDouble(precoTextField.getText());
+			                    String novaMarca = marcaTextField.getText();
+
+			                    // Execute a lógica desejada com os novos valores
+			                    Aparelho aparelho = new Aparelho(novaQualidade, novoPreco, novoId, null, novaMarca);
+			                    int deuCerto = intermediador.editar(aparelho);
+			                    if (deuCerto == 0) {
+			                        listarAparelhos(tabela);
+			                        JOptionPane.showMessageDialog(novaJanela, "Não foi possível editar o aparelho.");
+			                    } else {
+			                        listarAparelhos(tabela);
+			                        JOptionPane.showMessageDialog(novaJanela, "Aparelho editado com sucesso!");
+			                    }
+
+			                    acaoButton.setText("Editar");
+
+			                    // Desabilite a edição após enviar
+			                    idTextField.setEditable(false);
+			                    qualidadeTextField.setEditable(false);
+			                    precoTextField.setEditable(false);
+			                    marcaTextField.setEditable(false);
+			                }
+
+			                modoEditar = !modoEditar;
+			            }
+			        });
+
+			        novaJanela.setVisible(true);
+			    }
+        
+			}
+			private JTextField adicionarCampo(String rotulo, String valor, JFrame janela) {
+				JLabel label = new JLabel(rotulo);
+				JTextField campoTexto = new JTextField(valor);
+				campoTexto.setEditable(false); // Torna o campo de texto não editável
+				janela.add(label);
+				janela.add(campoTexto);
+
+				return campoTexto;
+			}
         });
-
+        
         panelBotoes.add(adicionarButton);
-        panelBotoes.add(removerButton);
-        panelBotoes.add(editarButton);
-        panelBotoes.add(listarButton);
+		panelBotoes.add(listarButton);
 
-        contentPane.add(panelBotoes, BorderLayout.SOUTH);
+		contentPane.add(panelBotoes, BorderLayout.SOUTH);
 
-        setVisible(true);
+		setVisible(true);
     }
 
     private void abrirTelaAdicionar() {
@@ -119,7 +227,7 @@ public class cadastroA extends JFrame {
         telaAdicionar.setSize(400, 300);
         telaAdicionar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(4, 2));
+        JPanel panel = new JPanel(new GridLayout(5, 2));
         panel.add(new JLabel("Qualidade:"));
         JTextField qualidadeTextField = new JTextField();
         panel.add(qualidadeTextField);
@@ -127,14 +235,10 @@ public class cadastroA extends JFrame {
         panel.add(new JLabel("Preço:"));
         JTextField precoTextField = new JTextField();
         panel.add(precoTextField);
-
-        panel.add(new JLabel("ID:"));
-        JTextField idTextField = new JTextField();
-        panel.add(idTextField);
-
-        panel.add(new JLabel("CNPJ da Academia:"));
-        JTextField cnpjAcademiaTextField = new JTextField();
-        panel.add(cnpjAcademiaTextField);
+        
+        panel.add(new JLabel("Marca:"));
+        JTextField marcaTextField = new JTextField();
+        panel.add(marcaTextField);
 
         JButton cadastrarButton = new JButton("Cadastrar");
         cadastrarButton.addActionListener(new ActionListener() {
@@ -142,15 +246,18 @@ public class cadastroA extends JFrame {
 
                 String qualidade = qualidadeTextField.getText();
                 double preco = Double.parseDouble(precoTextField.getText());
-                int id = Integer.parseInt(idTextField.getText());
-                String cnpjAcademia = cnpjAcademiaTextField.getText();
+                String marca = marcaTextField.getText();
 
-                Aparelho newAparelho = new Aparelho(id, qualidade, preco, cnpjAcademia);
-
-                aparelhoList.add(newAparelho);
-                JOptionPane.showMessageDialog(null, "Aparelho cadastrado!");
+                Aparelho novoAparelho = new Aparelho(qualidade, preco, 0, null, marca);
+                int deuCerto = intermediador.inserir(novoAparelho);
+                if (deuCerto == 0) {
+                    listarAparelhos(tabela);
+                    JOptionPane.showMessageDialog(telaAdicionar, "Não foi possível cadastrar o aparelho.");
+                } else {
+                    listarAparelhos(tabela);
+                    JOptionPane.showMessageDialog(telaAdicionar, "Aparelho cadastrado com sucesso!");
+                }
                 telaAdicionar.dispose();
-                displayAparelhoData();
             }
         });
         panel.add(cadastrarButton);
@@ -158,121 +265,27 @@ public class cadastroA extends JFrame {
         telaAdicionar.add(panel);
         telaAdicionar.setVisible(true);
     }
+    public void listarAparelhos(JTable tabelaEscolhida) {
+			arrayAparelho = intermediador.listarAparelhos();
 
-    private void abrirTelaRemover() {
-        JFrame telaRemover = new JFrame("Remover Aparelho");
-        telaRemover.setSize(300, 150);
-        telaRemover.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			DefaultTableModel model = new DefaultTableModel() {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					// Torna todas as células não editáveis
+					return false;
+				}
+			};
+			model.addColumn("Id");
+			model.addColumn("Qualidade");
+			model.addColumn("Preço");
+			model.addColumn("Marca");
 
-        JPanel panel = new JPanel(new GridLayout(2, 2));
-        panel.add(new JLabel("ID do Aparelho:"));
-        JTextField idAparelhoTextField = new JTextField();
-        panel.add(idAparelhoTextField);
+			for (Aparelho Aparelho : arrayAparelho) {
+					Object[] rowData = { Aparelho.getId(), Aparelho.getQualidade(), Aparelho.getPreco(), Aparelho.getMarca()};
+					model.addRow(rowData);
 
-        JButton removerButton = new JButton("Remover");
-        removerButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int idAparelho = Integer.parseInt(idAparelhoTextField.getText());
-
-                Aparelho aparelhoToRemove = findAparelhoById(idAparelho);
-
-                if (aparelhoToRemove != null) {
-                    aparelhoList.remove(aparelhoToRemove);
-                    JOptionPane.showMessageDialog(null, "Aparelho removido!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Aparelho não encontrado!");
-                }
-
-                telaRemover.dispose();
-                displayAparelhoData();
-            }
-        });
-        panel.add(removerButton);
-
-        telaRemover.add(panel);
-        telaRemover.setVisible(true);
-    }
-
-    private Aparelho findAparelhoById(int id) {
-        for (Aparelho aparelho : aparelhoList) {
-            if (aparelho.getId() == id) {
-                return aparelho;
-            }
-        }
-        return null;
-    }
-
-    private void abrirTelaEditar() {
-        JFrame telaEditar = new JFrame("Editar Aparelho");
-        telaEditar.setSize(400, 300);
-        telaEditar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        JPanel panel = new JPanel(new GridLayout(4, 2));
-        panel.add(new JLabel("ID do Aparelho:"));
-        JTextField idAparelhoTextField = new JTextField();
-        panel.add(idAparelhoTextField);
-
-        panel.add(new JLabel("Nova Qualidade:"));
-        JTextField novaQualidadeTextField = new JTextField();
-        panel.add(novaQualidadeTextField);
-
-        panel.add(new JLabel("Novo Preço:"));
-        JTextField novoPrecoTextField = new JTextField();
-        panel.add(novoPrecoTextField);
-
-        panel.add(new JLabel("Novo CNPJ da Academia:"));
-        JTextField novoCnpjAcademiaTextField = new JTextField();
-        panel.add(novoCnpjAcademiaTextField);
-
-        JButton editarButton = new JButton("Editar");
-        editarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int idAparelho = Integer.parseInt(idAparelhoTextField.getText());
-                String novaQualidade = novaQualidadeTextField.getText();
-                double novoPreco = Double.parseDouble(novoPrecoTextField.getText());
-                String novoCnpjAcademia = novoCnpjAcademiaTextField.getText();
-
-                Aparelho aparelhoE = findAparelhoById(idAparelho);
-
-                if (aparelhoE != null) {
-                    aparelhoE.setQualidade(novaQualidade);
-                    aparelhoE.setPreco(novoPreco);
-                    aparelhoE.setCnpjAcademia(novoCnpjAcademia);
-                    JOptionPane.showMessageDialog(null, "Aparelho editado!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Aparelho não encontrado!");
-                }
-
-                telaEditar.dispose();
-                displayAparelhoData();
-            }
-        });
-        panel.add(editarButton);
-
-        telaEditar.add(panel);
-        telaEditar.setVisible(true);
-    }
-
-    private void displayAparelhoData() {
-        String[] columnNames = {"ID", "Qualidade", "Preço", "CNPJ da Academia"};
-
-        DefaultTableModel model = new DefaultTableModel(getAparelhoDataArray(), columnNames);
-
-        tabela.setModel(model);
-    }
-
-    private Object[][] getAparelhoDataArray() {
-        Object[][] data = new Object[aparelhoList.size()][4];
-
-        for (int i = 0; i < aparelhoList.size(); i++) {
-            Aparelho aparelho = aparelhoList.get(i);
-            data[i][0] = aparelho.getId();
-            data[i][1] = aparelho.getQualidade();
-            data[i][2] = aparelho.getPreco();
-            data[i][3] = aparelho.getCnpjAcademia();
-        }
-
-        return data;
-    }
+			}
+			tabelaEscolhida.setModel(model);
+	}
 
 }

@@ -18,7 +18,6 @@ public class ClientePremiumDAO extends ClienteDAO {
 		PreparedStatement stmt;
 		try {
 			ClienteDAO clienteConnection = new ClienteDAO();
-			clienteConnection.inserir(c);
 			stmt = (PreparedStatement) connection.prepareStatement(sql);
 			stmt.setString(1, c.getCpf());
 			stmt.setString(2, c.getDietaPlanejada());

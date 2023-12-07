@@ -70,12 +70,11 @@ public class LojaSuplementoDAO {
 			stmtLoja.setString(1, c.getCnpj());
 			removeuLoja = stmtLoja.executeUpdate();
 			stmtLoja.close();
-			if (removeuLoja == 1) {
-				stmt = (PreparedStatement) connection.prepareStatement(sql);
-				stmt.setString(1, c.getCnpj());
-				removeu = stmt.executeUpdate();
-				stmt.close();
-			}
+			stmt = (PreparedStatement) connection.prepareStatement(sql);
+			stmt.setString(1, c.getCnpj());
+			removeu = stmt.executeUpdate();
+			stmt.close();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
